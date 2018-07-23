@@ -21,6 +21,14 @@ class s3_connect(object):
             aws_access_key_id=<key_id>
             aws_secret_access_key=<secret_key>
             default_bucket=<bucket>
+
+        Basic Usage:
+        
+        >>> from db_utils.s3_connect import s3_connect
+        >>>
+        >>> s3 = s3_connect('.databases.conf', 's3')
+        >>> s3.list_keys(prefix='examples')
+
         '''
         creds = configparser.ConfigParser()
         creds.read(config_file) 

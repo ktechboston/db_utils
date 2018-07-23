@@ -4,6 +4,14 @@ import time
 class timer(object):
     '''
     Helper class to time long running processes
+
+    Basic Usage:
+    
+    >>> from db_utils.timer import timer
+    >>>
+    >>> t = timer()
+    >>> t.lap('s')
+    5.469961
     '''
     def __init__(self):
         self.start = datetime.now()
