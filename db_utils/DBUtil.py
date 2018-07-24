@@ -38,7 +38,16 @@ class DBUtil():
 
 
     '''
-    def __init__(self, db_name, config_file):
+    def __init__(self, db_name=None, config_file=None):
+        if db_name is None: 
+            raise Exception("Please provide db_name=the-section-in-your-config-file as an argument") 
+        if config_file is None: 
+            raise Exception("Please provide config_file=/path/to/your/file as an argument") 
+        try: 
+            open(config_file)
+        except: 
+            raise Exception("Cannot open config_file. Please check the path to your config file") 
+
         self.db_name = db_name
         self.config_file = config_file
 
