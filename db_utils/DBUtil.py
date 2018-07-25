@@ -330,5 +330,3 @@ def sort_features(unsorted_list):
 
     return sorted_list
 
-
-def commit():
