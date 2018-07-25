@@ -78,7 +78,7 @@ class DBUtil():
     def format_sql(self, query):
         return '\n' + sqlparse.format(query, reindent=True, keyword_case='upper')
 
-    def get_df_from_query(self, query, params=None, pprint=False, to_df=True, server_cur=False, itersize=20000):
+    def get_df_from_query(self, query, params=None, pprint=False, to_df=True, server_cur=False, itersize=20000, commit=True):
         try:
             conn = self.conn_pool.getconn()
         except:
@@ -98,7 +98,10 @@ class DBUtil():
                 cur.execute(query, params)
                 data = cur.fetchall()
                 columns = [desc[0] for desc in cur.description]
-            
+        
+        if commit == True:
+            conn.commit()
+        
         self.conn_pool.putconn(conn)
         
         if to_df == True: 
@@ -107,7 +110,7 @@ class DBUtil():
         else:
             return data, columns
         
-    def get_arr_from_query(self, query, params=None, pprint=False):
+    def get_arr_from_query(self, query, params=None, pprint=False, commit=False):
         results_arr = []
         clock = timer()
         conn = self.get_conn()
@@ -120,6 +123,8 @@ class DBUtil():
             data = cur.fetchall()
             columns = [desc[0] for desc in cur.description]
             results_arr.append(columns)
+        if commit == True:
+            conn.commit()
 
         self.conn_pool.putconn(conn)
         for row in data:
@@ -324,3 +329,6 @@ def sort_features(unsorted_list):
                     sorted_list.insert(si, entry)
 
     return sorted_list
+
+
+def commit():
