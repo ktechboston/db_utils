@@ -152,6 +152,22 @@ class s3_connect(object):
         return {'bucket': bucket, 'key': key, 'params': params}
 
 
+    def copy(self, copy_key, dest_key, bucket=None):
+        '''
+        copy_key = source key to copy
+        dest_key = destination key
+        bucket = optional, defaults to 'default_bucket' section in config file
+        '''
+        if bucket == None:
+            bucket = self.DEFAULT_BUCKET
+        
+        copy_source = {
+            'Bucket': bucket,
+            'Key': copy_key
+        }
+
+        print(self.conn.meta.client.copy(copy_source, bucket, dest_key))
+        return 's3://{0}/{1}'.format(bucket, dest_key)
 
     def download_file(self, key, dest_file=None, bucket=None):
         '''
@@ -168,6 +184,7 @@ class s3_connect(object):
         bucket.download_file(key, dest_file)
 
         return dest_file
+
 
     def del_key(self, key, bucket=None):
         '''
