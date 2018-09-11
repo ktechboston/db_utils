@@ -1,11 +1,12 @@
-import boto3
-import configparser
-import csv
+# Imports
 from datetime import datetime
 from pprint import pprint
+import configparser
+import boto3
+import csv
+import os
 
-
-
+# S3 Object
 class s3_connect(object):
     
     def __init__(self, config_file, section):
@@ -133,17 +134,16 @@ class s3_connect(object):
         
         if append_ts == True:
             timestamp = '{year}-{month}-{day} {time}'.format(**params)
-            new_row = []
+            f_out_name = file_location.split('.')[0] + '_appended.txt'
+            f_out = open(f_out_name, 'w')
             with open(file_location, 'r+') as csvfile:
-                csv_reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-                for row in csv_reader:
-                    row.append(timestamp)
-                    new_row.append(row)
-
-            with open(file_location, 'w+') as csvfile:
-                csv_writer = csv.writer(csvfile, delimiter=',', quotechar='"')
-                for row in new_row:
-                    csv_writer.writerow(row)
+                for row in csvfile:
+                    out_row = row.strip() + ',' + timestamp + '\n'
+                    f_out.write(out_row)
+            f_out.close()
+            os.remove(file_location)
+            os.rename(f_out_name, file_location)
+            print('timestamps appended to ' + file_location)
         
         
         key = 'models/{model}/{model_type}/{year}/{month}/{pkl_model_type}{day}_{time}.{suffix}'.format(**params)
