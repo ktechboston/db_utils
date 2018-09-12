@@ -80,7 +80,9 @@ class s3_connect(object):
         model = ('complaints_first_send', 
                 'complaints_next_send', 
                 'offer_recommender',
-                'offer_recommender_v2')
+                'offer_recommender_v2',
+                'offer_recommender_v2_1',
+                'complaint_model_v2_0')
         
         file_location = path to file
         
@@ -98,7 +100,9 @@ class s3_connect(object):
             'complaints_first_send', 
             'complaints_next_send', 
             'offer_recommender',
-            'offer_recommender_v2'
+            'offer_recommender_v2',
+            'offer_recommender_v2_1',
+            'complaint_model_v2_0'
             )
 
         types = ('input', 'output', 'pickled_model')
