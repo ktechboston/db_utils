@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="db_utils",
-    version="0.0.9",
+    version="0.1.0",
     author="Komodo Technologies, LLC",
     author_email="flora@ktechboston.com",
     description="help access SQL",
@@ -18,4 +18,11 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ),
+    install_requires=[
+        'boto3',
+        'psycopg2',
+        'numpy',
+        'pandas',
+        'sqlparse'
+    ],
 )

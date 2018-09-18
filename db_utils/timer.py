@@ -83,3 +83,9 @@ def s3_ts(TIMESTAMP):
     returns s3 ts format /<year>/<month>/DD_HH:MM:SS
     '''
     return TIMESTAMP.strftime('/%Y/%m/%d_%H:%M:%S')
+
+def s3_glue_ts(TIMESTAMP):
+    '''
+    returns s3 AWS glue friendly key parition
+    '''
+    return TIMESTAMP.strftime('''/year=%Y/month=%m/day=%d/%Y-%m-%d_%H:%M:%S''')
