@@ -109,7 +109,7 @@ class dynamodb_connect():
         return response['Items']
 
 
-    def batch_write_item(self, table_name, items, print=False):
+    def batch_write_item(self, table_name, items):
         '''
             table_name = <string> name of table name in dynamodb
             items = <list> lists of dictionaries
@@ -121,9 +121,6 @@ class dynamodb_connect():
         request = {
                     table_name: r
                 }
-
-        if print == True:
-            pprint(request)
 
         return self.client.batch_write_item(RequestItems=request)
 
