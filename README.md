@@ -48,6 +48,11 @@ Basic Usage:
 
 ```
 
+### dynamodb_connect class
+Connection library for interacting with Dynamodb
+
+
+
 ### timer class
 Helper class to time long running processes
 

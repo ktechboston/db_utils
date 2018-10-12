@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="db_utils",
-    version="0.1.0",
+    version="0.1.1",
     author="Komodo Technologies, LLC",
     author_email="flora@ktechboston.com",
     description="help access SQL",
@@ -23,6 +23,7 @@ setuptools.setup(
         'psycopg2',
         'numpy',
         'pandas',
-        'sqlparse'
+        'sqlparse',
+        'awscli'
     ],
 )
