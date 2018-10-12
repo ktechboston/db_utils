@@ -5,7 +5,7 @@ import json
 from pprint import pprint
 from decimal import Decimal
 from boto3.dynamodb.types import TypeSerializer, TypeDeserializer
-from DBUtil import DBUtil
+from db_utils.DBUtil import DBUtil
 
 
 
