@@ -6,6 +6,8 @@ from pprint import pprint
 from decimal import Decimal
 from boto3.dynamodb.types import TypeSerializer, TypeDeserializer
 from db_utils.DBUtil import DBUtil
+from botocore.config import Config
+
 
 
 
@@ -16,7 +18,7 @@ class dynamodb_connect():
         provide config file with options:
             aws_access_key_id
             aws_secret_access_key
-            region=
+            region
         
 
         example:
@@ -30,9 +32,11 @@ class dynamodb_connect():
         self.config_file = config_file
         self.serializer = TypeSerializer()
         self.deserializer = TypeDeserializer()
-        config_file = os.path.join(os.environ['HOME'], '.databases.conf')
         creds = configparser.ConfigParser()
-        creds.read(config_file) 
+        creds.read(config_file)
+        config = Config(
+            retries = dict(max_attempts = 100),
+            )
         
         self.conn = boto3.resource(
             'dynamodb',
@@ -42,7 +46,11 @@ class dynamodb_connect():
         )
 
         self.client = boto3.client(
-            'dynamodb'
+            'dynamodb',
+            aws_access_key_id=creds.get(section, 'aws_access_key_id'),
+            aws_secret_access_key=creds.get(section, 'aws_secret_access_key'),
+            region_name=creds.get(section, 'region'),
+            config=config
         )
 
 
@@ -80,15 +88,19 @@ class dynamodb_connect():
 
     def query(self, table_name, **kwargs):
         '''
+
         table_name <string>
         
         kwargs:
             key <required> the primary key name of table
-            attribute 
-            operator <optional> default value  'EQ'
-                                'NE'|'IN'|'LE'|'LT'|'GE'|
-                                'GT'|'BETWEEN'|'NOT_NULL'|'NULL'
-                                |'CONTAINS'|'NOT_CONTAINS'|'BEGINS_WITH'
+            attribute <value of primary key>
+
+
+        ex)
+            dyno.query(
+                table_name='example_table', 
+                key='colA', 
+                attribute='foobar')
         '''
 
         if not kwargs.get('operator'):
@@ -151,19 +163,74 @@ class dynamodb_connect():
 
         ex)
 
-        {'email': 'rowBoi88@yahoo.com',
+        {'email': 'rowBoi88example@yahoo.com',
          'network_code': 'GW',
-         'network_offer_id': 'GW9472',
          'offer_id': '9472',
          'rank': 1,
-         'recommender_score': 0.968518495559692}
+         'recommender_score': 0.8}
 
-         {'M': {'email': {'S': 'rowBoi88@yahoo.com'},
+         {'M': {'email': {'S': 'example@yahoo.com'},
        'network_code': {'S': 'GW'},
-       'network_offer_id': {'S': 'GW9472'},
        'offer_id': {'S': '9472'},
        'rank': {'N': '1'},
-       'recommender_score': {'N': '0.968518495559692'}}}
+       'recommender_score': {'N': '0.8'}}}
         '''
         no_float = self.recursive_dec_convert(obj)
         return self.serializer.serialize(no_float)
+
+
+    def scan(self, **kwargs):
+        '''
+        The scan operation returns items and item attributes by accessing 
+        all items in the table.
+
+        kwargs:
+            TableName <string> required
+            AttributesToGet <list> optional returns specific columns
+            ScanFilter <optional>
+                ScanFilter={
+                        '<attribute>': {
+                            'AttributeValueList': [
+                                {
+                                    'S': 'string',
+                                    'N': 'string',
+                                    'B': b'bytes',
+                                    'SS': [
+                                        'string',
+                                    ],
+                                    'NS': [
+                                        'string',
+                                    ],
+                                    'BS': [
+                                        b'bytes',
+                                    ],
+                                    'M': {
+                                        'string': {'... recursive ...'}
+                                    },
+                                    'L': [
+                                        {'... recursive ...'},
+                                    ],
+                                    'NULL': True|False,
+                                    'BOOL': True|False
+                                },
+                            ],
+                            'ComparisonOperator': 'EQ'|'NE'|'IN'|'LE'|'LT'|'GE'|'GT'|'BETWEEN'|'NOT_NULL'|'NULL'|'CONTAINS'|'NOT_CONTAINS'|'BEGINS_WITH'
+                        }
+            Limit <optional>
+
+
+        ex) 
+        
+        SELECT * FROM <table_name> WHERE <attribute> <operator> <value>
+
+        dyno.scan(
+            TableName='<table_name>',
+            ScanFilter={
+                <attribute>: {'AttributeValueList': [{'S': '<value>'} ], 
+                'ComparisonOperator': '<operator>' }
+                },
+            )
+
+
+        '''
+        return self.client.scan(**kwargs)
