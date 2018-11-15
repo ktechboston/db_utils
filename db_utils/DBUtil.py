@@ -79,6 +79,8 @@ class DBUtil():
         return '\n' + sqlparse.format(query, reindent=True, keyword_case='upper')
 
     def get_df_from_query(self, query, params=None, pprint=False, to_df=True, server_cur=False, itersize=20000, commit=True):
+        clock = timer()
+
         try:
             conn = self.conn_pool.getconn()
         except:
@@ -104,6 +106,9 @@ class DBUtil():
         
         self.conn_pool.putconn(conn)
         
+        if pprint==True:
+            clock.print_lap('m')
+
         if to_df == True: 
             df = pd.DataFrame(data, columns=columns)
             return df
@@ -127,6 +132,10 @@ class DBUtil():
             conn.commit()
 
         self.conn_pool.putconn(conn)
+
+        if pprint==True:
+            clock.print_lap('m')
+
         for row in data:
             results_arr.append(list(row))
 
@@ -235,19 +244,44 @@ class DBUtil():
         self.conn_pool.putconn(conn)
         return 0
 
-    def copy_from(self, file, table, columns=None, sep=','):        
-        conn = self.get_conn()
-        conn.cursor().copy_from(file, table, sep=sep, columns=columns)
-
-    def copy_to(self, file, table, columns=None, sep=','):
-        conn = self.get_conn()
-        conn.cursor().copy_from(file, table, sep=sep, columns=columns)
 
     def copy_expert(self, sql, file, pprint=False):
+        '''
+        examples): 
+        copying data from a flat file to a table:
+
+        >>sql = """COPY test_table
+        FROM STDIN
+        WITH (FORMAT csv)"""
+        
+        >>with open('file.csv', 'r') as fl:
+        >>    copy_expert(sql, fl)
+        
+
+        copying date from a table to a flat file:
+
+
+        >>sql = """COPY test_table
+        TO STDOUT
+        WITH (FORMAT csv)"""
+        
+        >>with open('file.csv', 'w') as fl:
+        >>    copy_expert(sql, fl)
+
+        Postgres copy syntax:
+        https://www.postgresql.org/docs/9.6/sql-copy.html
+        '''
+
         conn = self.get_conn()
         if pprint == True:
+            clock = timer()
             print(self.format_sql(sql))
         conn.cursor().copy_expert(sql, file)
+        conn.commit()
+
+        if pprint == True:
+            clock.print_lap('m')
+
         
     def close(self):
         conn = self.get_conn()
@@ -259,6 +293,7 @@ class DBUtil():
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             try:
                 if pprint == True:
+                    clock = timer()
                     print(self.format_sql(query))
                 cur.execute(query, params)
             except Exception as e:
