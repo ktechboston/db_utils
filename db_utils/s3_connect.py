@@ -82,7 +82,9 @@ class s3_connect(object):
                 'offer_recommender',
                 'offer_recommender_v2',
                 'offer_recommender_v2_1',
+                'offer_recommender_v2_2',
                 'complaint_model_v2_0',
+                'complaint_model_v2_1',
                 'reactivation_model_v2_0',
                 'reactivation_model_v2_1')
 
@@ -104,7 +106,9 @@ class s3_connect(object):
             'offer_recommender',
             'offer_recommender_v2',
             'offer_recommender_v2_1',
+            'offer_recommender_v2_2',
             'complaint_model_v2_0',
+            'complaint_model_v2_1',
             'reactivation_model_v2_0',
             'reactivation_model_v2_1'
             )
