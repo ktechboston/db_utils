@@ -79,14 +79,14 @@ class s3_connect(object):
         bucket = optional, defaults to 'default_bucket' section in config file
         model = ('complaints_first_send',
                 'complaints_next_send',
-                'offer_recommender',
-                'offer_recommender_v2',
                 'offer_recommender_v2_1',
                 'offer_recommender_v2_2',
+                'offer_recommender_v2_3',
                 'complaint_model_v2_0',
                 'complaint_model_v2_1',
                 'reactivation_model_v2_0',
-                'reactivation_model_v2_1')
+                'reactivation_model_v2_1',
+                'reactivation_model_v2_2')
 
         file_location = path to file
 
@@ -103,14 +103,14 @@ class s3_connect(object):
         valid_models = (
             'complaints_first_send',
             'complaints_next_send',
-            'offer_recommender',
-            'offer_recommender_v2',
             'offer_recommender_v2_1',
             'offer_recommender_v2_2',
+            'offer_recommender_v2_3',
             'complaint_model_v2_0',
             'complaint_model_v2_1',
             'reactivation_model_v2_0',
-            'reactivation_model_v2_1'
+            'reactivation_model_v2_1',
+            'reactivation_model_v2_2'
             )
 
         types = ('input', 'output', 'pickled_model')
