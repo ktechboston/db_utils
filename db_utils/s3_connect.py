@@ -86,7 +86,8 @@ class s3_connect(object):
                 'complaint_model_v2_1',
                 'reactivation_model_v2_0',
                 'reactivation_model_v2_1',
-                'reactivation_model_v2_2')
+                'reactivation_model_v2_2',
+                'conversion_model_v1_0')
 
         file_location = path to file
 
@@ -110,7 +111,8 @@ class s3_connect(object):
             'complaint_model_v2_1',
             'reactivation_model_v2_0',
             'reactivation_model_v2_1',
-            'reactivation_model_v2_2'
+            'reactivation_model_v2_2',
+            'conversion_model_v1_0'
             )
 
         types = ('input', 'output', 'pickled_model')
