@@ -24,6 +24,7 @@ setuptools.setup(
         'numpy',
         'pandas',
         'sqlparse',
-        'awscli'
+        'awscli',
+        'snowflake-connector-python'
     ],
 )
