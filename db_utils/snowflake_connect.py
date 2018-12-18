@@ -1,3 +1,4 @@
+from db_utils.timer import timer
 import snowflake.connector
 import numpy as np
 import pandas as pd
@@ -23,8 +24,8 @@ class snowflake_connect():
 
     .databases.conf
     [snowflake]
-    account='abc123.us-east-1',
-    host='abc123.us-east-1.snowflakecomputing.com'
+    account=abc123.us-east-1
+    host=abc123.us-east-1.snowflakecomputing.com
     user=test_user
     password=password
     port=443
@@ -65,3 +66,24 @@ class snowflake_connect():
         return '\n' + sqlparse.format(query, reindent=True, keyword_case='upper')
 
 
+    def update_db(self, query, params=None, pprint=False):
+        clock = timer()
+        conn = self.connect_to_db()
+
+        try:
+            if pprint == True:
+                print(self.format_sql(query))
+            
+            cur = conn.cursor()
+            cur.execute(query, params)
+            row_count = cur.rowcount
+        finally:
+            conn.close()
+
+        if pprint == True:
+            clock.print_lap('m')
+
+        return row_count
+
+
+    
