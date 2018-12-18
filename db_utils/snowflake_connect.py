@@ -86,4 +86,26 @@ class snowflake_connect():
         return row_count
 
 
-    
+    def get_df_from_query(self, query, params=None, pprint=False, to_df=True):
+        clock = timer()
+        conn = self.connect_to_db()
+  
+        
+        if pprint==True:
+            print(self.format_sql(query))
+
+
+        with conn.cursor() as cur:
+            cur.execute(query, params)
+            data = cur.fetchall()
+            columns = [desc[0] for desc in cur.description]
+        
+        
+        if pprint==True:
+            clock.print_lap('m')
+
+        if to_df == True: 
+            df = pd.DataFrame(data, columns=columns)
+            return df
+        else:
+            return data, columns

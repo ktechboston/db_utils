@@ -19,3 +19,5 @@ VALUES
 	""", pprint=True)
 
 print(row)
+
+print(db.get_df_from_query('select * from aib.deploy_comp limit 10', pprint=True))
