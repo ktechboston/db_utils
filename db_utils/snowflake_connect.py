@@ -2,6 +2,7 @@ import snowflake.connector
 import numpy as np
 import pandas as pd
 import sqlparse
+import configparser
 
 
 class snowflake_connect():
