@@ -1,4 +1,5 @@
 from db_utils.timer import timer
+from db_utils.db_connect import db_connect
 import psycopg2
 import psycopg2.extras
 import configparser
@@ -8,7 +9,7 @@ import pandas as pd
 import sqlparse
 
 
-class DBUtil():
+class pg_connect(db_connect):
     '''
     Database connection class to interact with Postgres or Redshift Databases
 
@@ -38,19 +39,6 @@ class DBUtil():
 
 
     '''
-    def __init__(self, db_name=None, config_file=None):
-        if db_name is None: 
-            raise Exception("Please provide db_name=the-section-in-your-config-file as an argument") 
-        if config_file is None: 
-            raise Exception("Please provide config_file=/path/to/your/file as an argument") 
-        try: 
-            open(config_file)
-        except: 
-            raise Exception("Cannot open config_file. Please check the path to your config file") 
-
-        self.db_name = db_name
-        self.config_file = config_file
-
     def connect_to_db(self):
         db_name = self.db_name
         cp = configparser.ConfigParser()
@@ -75,8 +63,6 @@ class DBUtil():
             conn = self.conn_pool.getconn()
         return conn
 
-    def format_sql(self, query):
-        return '\n' + sqlparse.format(query, reindent=True, keyword_case='upper')
 
     def get_df_from_query(self, query, params=None, pprint=False, to_df=True, server_cur=False, itersize=20000, commit=True):
         clock = timer()
@@ -114,56 +100,7 @@ class DBUtil():
             return df
         else:
             return data, columns
-        
-    def get_arr_from_query(self, query, params=None, pprint=False, commit=False):
-        results_arr = []
-        clock = timer()
-        conn = self.get_conn()
 
-        with conn.cursor() as cur:
-            if pprint == True:
-                print(self.format_sql(query))
-            cur.execute(query, params)
-
-            data = cur.fetchall()
-            columns = [desc[0] for desc in cur.description]
-            results_arr.append(columns)
-        if commit == True:
-            conn.commit()
-
-        self.conn_pool.putconn(conn)
-
-        if pprint==True:
-            clock.print_lap('m')
-
-        for row in data:
-            results_arr.append(list(row))
-
-        return results_arr
-
-    def update_db(self, query, params=None, pprint=False):
-        clock = timer()
-        conn = self.get_conn()
-
-        with conn.cursor() as cur:
-            try:
-                if pprint == True:
-                    print(self.format_sql(query))
-                cur.execute(query, params)
-                row_count = cur.rowcount
-            except Exception as e:
-                print(e)
-                self.conn_pool.putconn(conn)
-                raise e
-                
-
-        conn.commit()
-        self.conn_pool.putconn(conn)
-        
-        if pprint==True:
-            clock.print_lap('m')
-        
-        return row_count
 
     def write_df_to_table(self, df, tablename, new_table=True, batched=False, pkeys={}, with_index=False):
         arr = []
@@ -282,10 +219,6 @@ class DBUtil():
         if pprint == True:
             clock.print_lap('m')
 
-        
-    def close(self):
-        conn = self.get_conn()
-        conn.close()
 
     def get_dicts_from_query(self, query, params=None, pprint=False):
         conn = self.get_conn()
@@ -304,7 +237,8 @@ class DBUtil():
             conn.commit()
 
             return cur.fetchall()
-        
+    
+
     def transaction(self, queries, pprint=False):
         '''
         method for creating transcations via psycopg2
@@ -336,32 +270,3 @@ class DBUtil():
                 conn.rollback()
         
         return row_counts
-
-        
-def sort_features(unsorted_list):
-    sorted_list = []
-
-    for entry in unsorted_list:
-        # base case, just starting out
-        # entry = (abs(entry[0]), entry[1], entry[0] > 0 )
-        if len(sorted_list) == 0:
-            sorted_list.append(entry)
-        # scan sorted list and insert
-        else:
-            # check each end
-            if entry < sorted_list[0]:
-                sorted_list.insert(0, entry)
-                continue
-            if entry > sorted_list[len(sorted_list)-1]:
-                sorted_list.append(entry)
-                continue
-            # scan whole list
-            si = 0
-            for this in sorted_list[:len(sorted_list)-2]:
-                si +=1
-                that = sorted_list[si]
-                if this < entry and entry < that:
-                    sorted_list.insert(si, entry)
-
-    return sorted_list
-
