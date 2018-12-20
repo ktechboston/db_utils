@@ -7,7 +7,7 @@ from pprint import pprint
 config_file = os.path.join(os.environ['HOME'], '.databases.conf')
 db = pg_connect(config_file=config_file, db_name='redshift')
 
-
+db.connect_to_db()
 
 
 print(db.get_df_from_query('select * from aib.deploy_comp where cam_date = %s limit 10', pprint=True, params=('2018-07-11',)))

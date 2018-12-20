@@ -6,7 +6,7 @@
 pip install db_utils
 ```
 
-### pg_connect class previously DBUtil
+### pg_connect class (previously DBUtil)
 A database connection class to interact with  Postgres or Redshift
 
 Basic Usage:
@@ -72,7 +72,6 @@ Basic Usage:
     >>> s3.list_keys(prefix='examples')
 
 ```
-
 
 ### dynamodb_connect class
 Connection library for interacting with Dynamodb
