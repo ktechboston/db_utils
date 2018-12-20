@@ -50,28 +50,20 @@ class pg_connect(db_connect):
         port = cp.get(db_name, "port")
 
 
-        kwargs = {"host":host,"password":password,
-            "user":user,"dbname":database, "port":port}
+        kwargs = {
+                "host":host,
+                "password":password,
+                "user":user,
+                "dbname":database, 
+                "port":port
+                }
 
-        self.conn_pool = SimpleConnectionPool(1, 3, **kwargs)
-
-    def get_conn(self):
-        try:
-            conn = self.conn_pool.getconn()
-        except:
-            self.connect_to_db()
-            conn = self.conn_pool.getconn()
-        return conn
-
+        self.conn = psycopg2.connect(**kwargs)
+        return self.conn
 
     def get_df_from_query(self, query, params=None, pprint=False, to_df=True, server_cur=False, itersize=20000, commit=True):
         clock = timer()
-
-        try:
-            conn = self.conn_pool.getconn()
-        except:
-            self.connect_to_db()
-            conn = self.conn_pool.getconn()
+        conn = self.connect_to_db()
         
         if pprint==True:
             print(self.format_sql(query))
@@ -90,7 +82,7 @@ class pg_connect(db_connect):
         if commit == True:
             conn.commit()
         
-        self.conn_pool.putconn(conn)
+        self.close_conn()
         
         if pprint==True:
             clock.print_lap('m')
@@ -119,7 +111,7 @@ class pg_connect(db_connect):
 
     def write_arr_to_table(self, arr, tablename, columns, new_table=True):
 
-        conn = self.get_conn()
+        conn = self.connect_to_db()
 
         column_str = "({0})".format( ",".join(columns))
         column_def = "({0} varchar(256) )".format( " varchar(256),".join(columns))
@@ -142,16 +134,16 @@ class pg_connect(db_connect):
 
             except Exception as e:
                 print(e)
-                self.conn_pool.putconn(conn)
+                self.close_conn()
                 raise e
 
 
         conn.commit()
-        self.conn_pool.putconn(conn)
+        self.close_conn()
         return 0
     
     def batch_write_arr_to_table(self, arr, tablename, columns, pkeys, new_table=True):
-        conn = self.get_conn()
+        conn = self.connect_to_db()
 
         dist_str = 'distkey(' + pkeys['dist'] + ')' if 'dist' in pkeys else ''
         sort_str = 'sortkey(' + pkeys['sort'] + ')' if 'sort' in pkeys else ''
@@ -173,12 +165,12 @@ class pg_connect(db_connect):
                     sql = "insert into {0} {1} values {2};".format(tablename, column_str, value_str)
                     try: cur.execute(sql)
                     except Exception as e:
-                        print(e); self.conn_pool.putconn(conn)
+                        print(e); self.close_conn()
                         raise e
                     data = []
 
         conn.commit()
-        self.conn_pool.putconn(conn)
+        self.close_conn()
         return 0
 
 
@@ -209,7 +201,7 @@ class pg_connect(db_connect):
         https://www.postgresql.org/docs/9.6/sql-copy.html
         '''
 
-        conn = self.get_conn()
+        conn = self.connect_to_db()
         if pprint == True:
             clock = timer()
             print(self.format_sql(sql))
@@ -221,20 +213,20 @@ class pg_connect(db_connect):
 
 
     def get_dicts_from_query(self, query, params=None, pprint=False):
-        conn = self.get_conn()
+        conn = self.connect_to_db()
 
+        if pprint == True:
+            clock = timer()
+            print(self.format_sql(query))
+        
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            try:
-                if pprint == True:
-                    clock = timer()
-                    print(self.format_sql(query))
+            try:                
                 cur.execute(query, params)
-            except Exception as e:
-                print(e)
-                self.conn_pool.putconn(conn)
-                raise e
-
-            conn.commit()
+                conn.commit()
+            finally:
+                self.close_conn()
+            
+            
 
             return cur.fetchall()
     
@@ -250,7 +242,7 @@ class pg_connect(db_connect):
         returns list of row counts for each query
         '''
         row_counts = []
-        conn = self.get_conn()
+        conn = self.connect_to_db()
         with conn.cursor() as cur:
             try:
                 for query in queries:
@@ -266,7 +258,9 @@ class pg_connect(db_connect):
                 conn.commit()
             except (Exception, psycopg2.DatabaseError) as e:
                 print(str(e))
-                print('rolling back transacation')
+                print('Rolling back transacation')
                 conn.rollback()
+            finally:
+                self.close_conn()
         
         return row_counts

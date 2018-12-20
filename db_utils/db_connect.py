@@ -156,4 +156,5 @@ class db_connect():
         try:
             self.conn.close()
         except:
+            print('Error {0}'.format(e))
             pass

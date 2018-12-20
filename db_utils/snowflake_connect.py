@@ -48,5 +48,5 @@ class snowflake_connect(db_connect):
             port = cp.get(db_name, 'port')
             )
 
-        self.conn_pool = conn
+        self.conn = conn
         return conn
