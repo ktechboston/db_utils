@@ -6,7 +6,7 @@
 pip install db_utils
 ```
 
-### DBUtil class
+### pg_connect class previously DBUtil
 A database connection class to interact with  Postgres or Redshift
 
 Basic Usage:
@@ -21,11 +21,36 @@ Basic Usage:
     port=5439
     database=test_db
 
-    >>> from db_utils.DBUtil import DBUtil
+    >>> from db_utils.pg_connect import pg_connect
     >>>
-    >>> db = DBUtil('redshift_example', '.databases.conf')
+    >>> db = pg_connect('redshift_example', '.databases.conf')
     >>> db.get_arr_from_query('select * from test', pprint=True)
 ```
+
+
+### snowflake_connect class
+A database connection class to interact with snowflake
+
+Basic Usage:
+ * create database configuration file
+ * example below is called .databases.conf
+
+```
+    [snowflake]
+    account=abc123.us-east-1
+    host=abc123.us-east-1.snowflakecomputing.com
+    user=test_user
+    password=password
+    port=443
+    database=test_db
+
+```
+
+
+### db_connect class
+Parent python database connectin class utilizing
+API specification v2.0 https://www.python.org/dev/peps/pep-0249/#connection-methods
+use the connection classes above specific to the flavor of db you're using
 
 
 ### s3_connect class
@@ -48,9 +73,9 @@ Basic Usage:
 
 ```
 
+
 ### dynamodb_connect class
 Connection library for interacting with Dynamodb
-
 
 
 ### timer class
