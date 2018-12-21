@@ -6,7 +6,7 @@ from psycopg2.pool import SimpleConnectionPool
 import numpy as np
 import pandas as pd
 import sqlparse
-
+import warnings
 
 class DBUtil():
     '''
@@ -39,6 +39,7 @@ class DBUtil():
 
     '''
     def __init__(self, db_name=None, config_file=None):
+        warnings.warn('DBUtil is being depreciated use pg_connect instead.')
         if db_name is None: 
             raise Exception("Please provide db_name=the-section-in-your-config-file as an argument") 
         if config_file is None: 
@@ -50,6 +51,7 @@ class DBUtil():
 
         self.db_name = db_name
         self.config_file = config_file
+       
 
     def connect_to_db(self):
         db_name = self.db_name
