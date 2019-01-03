@@ -22,6 +22,10 @@ class snowflake_connect(db_connect):
     port=
     database=
 
+    **optional fields needed for copy into method**
+    aws_access_key_id=
+    aws_secret_access_key=
+
     ex)
 
     .databases.conf
@@ -33,6 +37,7 @@ class snowflake_connect(db_connect):
     port=443
     database=test_db
 
+
     '''
     
     def connect_to_db(self):
@@ -41,12 +46,12 @@ class snowflake_connect(db_connect):
         cp.read(self.config_file)
         
         conn = snowflake.connector.connect(
-            account = cp.get(db_name, 'account'),
-            user = cp.get(db_name, 'user'),
-            password = cp.get(db_name, 'password'),
-            host = cp.get(db_name, 'host'),
-            database = cp.get(db_name, 'database'),
-            port = cp.get(db_name, 'port')
+            account = cp.get(self.db_name, 'account'),
+            user = cp.get(self.db_name, 'user'),
+            password = cp.get(self.db_name, 'password'),
+            host = cp.get(self.db_name, 'host'),
+            database = cp.get(self.db_name, 'database'),
+            port = cp.get(self.db_name, 'port')
             )
 
         self.conn = conn
@@ -81,3 +86,55 @@ class snowflake_connect(db_connect):
             
 
             return cur.fetchall()
+
+
+
+    def copy_into(self, query, pprint=False):
+        '''
+        use copy into method to send and load data to and from S3:
+            1) unload from s3 https://docs.snowflake.net/manuals/user-guide/data-unload-s3.html
+            2) copy from s3 https://docs.snowflake.net/manuals/user-guide/data-load-s3.html
+
+        
+        database.conf file must have s3 credentials i.e.
+
+        aws_access_key_id=
+        aws_secret_access_key=
+        
+        query <string> - sql statement must include AWS credentials variables
+        
+        ex)
+        
+        COPY INTO test_schema.test_table FROM 's3://<bucket>/test_key'
+        FILE_FORMAT = (
+                FIELD_DELIMITER = '|' 
+                COMPRESSION = gzip
+                )
+        CREDENTIALS = (aws_key_id='{aws_access}' aws_secret_key='{aws_secret}')
+
+
+        pprint optional <boolean> -  prints formated sql query and time to execute in minutes
+
+        '''
+        conn = self.connect_to_db()
+        cp = configparser.ConfigParser()
+        cp.read(self.config_file)
+
+        aws_creds = {
+            'aws_access': cp.get(self.db_name, 'aws_access_key_id'),
+            'aws_secret': cp.get(self.db_name, 'aws_secret_access_key')
+            }
+
+        creds = "CREDENTIALS = (aws_key_id='{aws_access}' aws_secret_key='{aws_secret}')"
+
+        if pprint == True:
+            clock = timer()
+            print(self.format_sql(query))
+
+
+        with conn.cursor() as cur:
+            try:                
+                cur.execute(query.format(**aws_creds))
+                conn.commit()
+            finally:
+                self.close_conn()
