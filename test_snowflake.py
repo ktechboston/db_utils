@@ -1,4 +1,4 @@
-from db_utils.snowflake_connect import snowflake_connect, server_cur_iterate
+from db_utils.snowflake_connect import snowflake_connect
 import os
 from pprint import pprint
 
@@ -25,4 +25,3 @@ FILE_FORMAT = (TYPE = CSV)
 CREDENTIALS = (aws_key_id='{aws_access}' aws_secret_key='{aws_secret}')
 OVERWRITE = TRUE
 ''', pprint=True)
-

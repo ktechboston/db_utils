@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="db_utils",
-    version="0.2.2",
+    version="0.2.3",
     author="Komodo Technologies, LLC",
     author_email="flora@ktechboston.com",
     description="help access SQL",
