@@ -138,3 +138,63 @@ class snowflake_connect(db_connect):
                 conn.commit()
             finally:
                 self.close_conn()
+
+
+#     def get_df_from_query(self, query, params=None, pprint=False, server_cur=False, size=2000):
+#         '''
+#         query <string> - sql state ment
+#         params optional <tuple> - user input variables to prevent sql injection
+#                                   sql statement should be formated with question
+#                                   marks where variables should be placed
+
+#                                   e.g. WHERE username = %s
+#         pprint optional <boolean> -  prints formated sql query and time to execute in minutes
+
+#         returns a panadas dataframe
+#         '''
+#         clock = timer()
+#         conn = self.connect_to_db()
+        
+#         if pprint==True:
+#             print(self.format_sql(query))
+
+#         with conn.cursor() as cur:
+#             try:
+#                 cur.execute(query, params)
+
+
+#                 if server_cur==True:
+#                     # output = []
+#                     # while True:
+#                     #     rows = cur.fetchmany(size)
+#                     #     if not rows:
+#                     #         clock.print_lap('m')
+#                     #         return output
+#                     #     for row in rows:
+#                     #         output.append(row)
+#                     return cur
+
+
+#                 data = cur.fetchall()
+#                 columns = [desc[0] for desc in cur.description]
+#                 conn.commit()
+#             finally:
+#                 cur.close()
+#                 self.close_conn()
+
+#         if pprint==True:
+#             clock.print_lap('m')
+
+#         df = pd.DataFrame(data, columns=columns)
+#         return df
+
+
+
+# def server_cur_iterate(cursor, size=20):
+#     while True:
+#         rows = cursor.fetchmany(size)
+#         if not rows:
+#             print('nah dont let anyone tell you otherwise')
+#             break
+#         for row in rows:
+#             print(row)

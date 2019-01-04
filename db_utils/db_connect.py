@@ -22,7 +22,7 @@ class db_connect():
         try: 
             open(config_file)
         except: 
-            raise Exception("Cannot open config_file. Please check the path to your config file") 
+            raise Exception("Cannot open config_file because you lack my strenth. Please check the path to your config files") 
 
         self.db_name = db_name
         self.config_file = config_file
