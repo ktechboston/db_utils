@@ -88,7 +88,6 @@ class snowflake_connect(db_connect):
             return cur.fetchall()
 
 
-
     def copy_into(self, query, pprint=False):
         '''
         use copy into method to send and load data to and from S3:

@@ -151,6 +151,40 @@ class db_connect():
         return row_count
 
 
+    def transaction(self, queries, pprint=False):
+        '''
+        method for creating transcations via psycopg2
+        important to use when a rollback must be called if the
+        entire series of queries do not successfully complete
+        
+        queries - list - sql statements
+        
+        returns list of row counts for each query
+        '''
+        row_counts = []
+        conn = self.connect_to_db()
+        with conn.cursor() as cur:
+            try:
+                for query in queries:
+                    clock = timer()
+                    if pprint == True:
+                        print(self.format_sql(query))
+                    cur.execute(query)
+                    
+                    if pprint == True:
+                        clock.print_lap('m')
+                        
+                    row_counts.append(cur.rowcount)
+                conn.commit()
+            except Exception as e:
+                print(str(e))
+                print('Rolling back transacation')
+                conn.rollback()
+            finally:
+                self.close_conn()
+        
+        return row_counts
+
 
     def close_conn(self):
         try:
