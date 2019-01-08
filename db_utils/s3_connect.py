@@ -34,11 +34,13 @@ class s3_connect(object):
         creds = configparser.ConfigParser()
         creds.read(config_file)
         self.DEFAULT_BUCKET=creds.get(section, 'default_bucket')
-
+        self.access_key = creds.get(section, 'aws_access_key_id')
+        self.secret_key = creds.get(section, 'aws_secret_access_key')
+        
         self.conn = boto3.resource(
             's3',
-            aws_access_key_id=creds.get(section, 'aws_access_key_id'),
-            aws_secret_access_key=creds.get(section, 'aws_secret_access_key'),
+            aws_access_key_id=self.access_key,
+            aws_secret_access_key=self.secret_key,
         )
 
 
