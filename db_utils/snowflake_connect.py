@@ -1,6 +1,7 @@
 from db_utils.timer import timer
 from db_utils.db_connect import db_connect
 from snowflake.connector import DictCursor
+from pprint import pprint as pretty_print
 import snowflake.connector
 import numpy as np
 import pandas as pd
@@ -114,6 +115,7 @@ class snowflake_connect(db_connect):
 
         pprint optional <boolean> -  prints formated sql query and time to execute in minutes
 
+        returns dictionary of metadata
         '''
         conn = self.connect_to_db()
         cp = configparser.ConfigParser()
@@ -131,12 +133,18 @@ class snowflake_connect(db_connect):
             print(self.format_sql(query))
 
 
-        with conn.cursor() as cur:
+        with conn.cursor(DictCursor) as cur:
             try:                
                 cur.execute(query.format(**aws_creds))
+                data = cur.fetchall()
                 conn.commit()
+                if pprint == True:
+                    clock.print_lap('m')
+                    pretty_print(data[0])
             finally:
                 self.close_conn()
+
+        return data
 
 
     def get_df_from_query(self, query, params=None, pprint=False, server_cur=False):
