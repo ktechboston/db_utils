@@ -140,7 +140,7 @@ class snowflake_connect(db_connect):
                 conn.commit()
                 if pprint == True:
                     clock.print_lap('m')
-                    pretty_print(data[0])
+                    pretty_print(data)
             finally:
                 self.close_conn()
 
