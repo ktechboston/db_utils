@@ -211,8 +211,10 @@ class snowflake_s3(snowflake_connect):
         self.s3conn = s3_connect(self.config_file, self.db_name)
 
 
-
     def __enter__(self):
+        '''
+        context manager
+        '''
         return self
 
 
@@ -224,15 +226,28 @@ class snowflake_s3(snowflake_connect):
         self.default_bucket = creds.get(self.db_name, 'default_bucket')
 
 
-    def cursor(self, sql, s3_prefix, file_format=None, bucket=None, pprint=False):
+    def cursor(self, query, s3_prefix, file_format=None, bucket=None, pprint=False):
         '''
-        
+        dumps large dataset to s3
 
         .database.conf file must have s3 credentials i.e.
+            aws_access_key_id=
+            aws_secret_access_key=
+            default_bucket=
+
+        query <string> - sql statement
         
-        aws_access_key_id=
-        aws_secret_access_key=
-        default_bucket=
+        s3_prefix <string> - location in s3 to dump data to
+
+        file_format <string> - snowflake unload formatTypeOptions 
+                                https://docs.snowflake.net/manuals/sql-reference/sql/copy-into-table.html
+
+        bucket <string> - s3 bucket if not default_bucket
+
+        pprint <boolean> - prints formatted sql for s3 dump
+
+        returns number of files dumped to s3
+        use fetch method to retrieve s3 files one at a time
         '''
 
         self.get_aws_creds()
@@ -244,35 +259,41 @@ class snowflake_s3(snowflake_connect):
         if bucket == None:
             self.bucket = self.default_bucket
 
-        s3 = 's3://{0}/{1}'.format(bucket, s3_prefix)
+        s3 = 's3://{0}/{1}'.format(self.bucket, s3_prefix)
         
         dump_vars = {
             's3': s3,
             'file_format': file_format,
-            'sql': sql
+            'query': query
         }
 
         s3_dump = Template('''
-        COPY INTO '{{ s3 }}' FROM ({{ sql }}){% if file_format %}
+        COPY INTO '{{ s3 }}' FROM ({{ query }}){% if file_format %}
         FILE_FORMAT = (
             {{ file_format }}
             )
         {% endif %}
         CREDENTIALS = (aws_key_id='{aws_access}' aws_secret_key='{aws_secret}')
         OVERWRITE = FALSE
-        SINGLE = FALSE
-        
-        ''')
+        SINGLE = FALSE''')
 
         self.copy_into(s3_dump.render(dump_vars), pprint=pprint)
         keys = self.s3conn.list_keys(prefix=s3_prefix)
-        self.s3_queue = ['s3://{0}/{1}'.format(bucket, i) for i in keys]
+        self.s3_queue = [i for i in reversed(keys)]
 
         return len(keys)
 
 
     def fetch(self):
-        print(self.s3_queue.pop())
+        '''
+        '''
+        try:
+            key = self.s3_queue.pop()
+        except IndexError:
+            return None
+
+        self.s3conn.del_key(key, bucket=self.bucket)
+        return key
 
 
     def close(self):
@@ -280,7 +301,7 @@ class snowflake_s3(snowflake_connect):
         cleans up s3 queue
         '''
         for i in self.s3_queue:
-            self.s3conn.del_key(i)
+            print(self.s3conn.del_key(i, bucket=self.bucket))
 
 
     def __exit__(self, exc_type, exc_value, traceback):
