@@ -25,6 +25,7 @@ setuptools.setup(
         'pandas',
         'sqlparse',
         'awscli',
-        'snowflake-connector-python'
+        'snowflake-connector-python',
+        'jinja2'
     ],
 )
