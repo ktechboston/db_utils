@@ -1,7 +1,9 @@
 from db_utils.timer import timer
 from db_utils.db_connect import db_connect
+from db_utils.s3_connect import s3_connect
 from snowflake.connector import DictCursor
 from pprint import pprint as pretty_print
+from jinja2 import Template
 import snowflake.connector
 import numpy as np
 import pandas as pd
@@ -186,5 +188,104 @@ class snowflake_connect(db_connect):
 
         df = pd.DataFrame(data, columns=columns)
         return df
+
+
+
+
+class snowflake_s3(snowflake_connect):
+
+    def __init__(self, db_name=None, config_file=None):
+        if db_name is None: 
+            raise Exception("Please provide db_name=the-section-in-your-config-file as an argument") 
+        if config_file is None: 
+            raise Exception("Please provide config_file=/path/to/your/file as an argument") 
+        try: 
+            open(config_file)
+        except: 
+            raise Exception("Cannot open config_file. Please check the path to your config files") 
+
+        self.db_name = db_name
+        self.config_file = config_file
+        self.s3_queue = []
+        self.bucket = None
+        self.s3conn = s3_connect(self.config_file, self.db_name)
+
+
+
+    def __enter__(self):
+        return self
+
+
+    def get_aws_creds(self):
+        creds = configparser.ConfigParser()
+        creds.read(self.config_file)
+        self.access_key = creds.get(self.db_name, 'aws_access_key_id')
+        self.secret_key = creds.get(self.db_name, 'aws_secret_access_key')
+        self.default_bucket = creds.get(self.db_name, 'default_bucket')
+
+
+    def cursor(self, sql, s3_prefix, file_format=None, bucket=None, pprint=False):
+        '''
+        
+
+        .database.conf file must have s3 credentials i.e.
+        
+        aws_access_key_id=
+        aws_secret_access_key=
+        default_bucket=
+        '''
+
+        self.get_aws_creds()
+        check_prefix = self.s3conn.list_keys(prefix=s3_prefix)
+
+        if len(check_prefix) > 0:
+            raise Exception('Check s3_prefix.. already exists in s3 - {}'.format(check_prefix[0]))
+
+        if bucket == None:
+            self.bucket = self.default_bucket
+
+        s3 = 's3://{0}/{1}'.format(bucket, s3_prefix)
+        
+        dump_vars = {
+            's3': s3,
+            'file_format': file_format,
+            'sql': sql
+        }
+
+        s3_dump = Template('''
+        COPY INTO '{{ s3 }}' FROM ({{ sql }}){% if file_format %}
+        FILE_FORMAT = (
+            {{ file_format }}
+            )
+        {% endif %}
+        CREDENTIALS = (aws_key_id='{aws_access}' aws_secret_key='{aws_secret}')
+        OVERWRITE = FALSE
+        SINGLE = FALSE
+        
+        ''')
+
+        self.copy_into(s3_dump.render(dump_vars), pprint=pprint)
+        keys = self.s3conn.list_keys(prefix=s3_prefix)
+        self.s3_queue = ['s3://{0}/{1}'.format(bucket, i) for i in keys]
+
+        return len(keys)
+
+
+    def fetch(self):
+        print(self.s3_queue.pop())
+
+
+    def close(self):
+        '''
+        cleans up s3 queue
+        '''
+        for i in self.s3_queue:
+            self.s3conn.del_key(i)
+
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+
 
 

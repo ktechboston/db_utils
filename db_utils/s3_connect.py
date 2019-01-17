@@ -1,6 +1,7 @@
 # Imports
 from datetime import datetime
 from pprint import pprint
+import io
 import configparser
 import boto3
 import csv
@@ -185,6 +186,7 @@ class s3_connect(object):
         print(self.conn.meta.client.copy(copy_source, bucket, dest_key))
         return 's3://{0}/{1}'.format(bucket, dest_key)
 
+
     def download_file(self, key, dest_file=None, bucket=None):
         '''
         key = s3 key
@@ -200,6 +202,23 @@ class s3_connect(object):
         bucket.download_file(key, dest_file)
 
         return dest_file
+
+
+    def get_contents(self, key, bucket=None):
+        '''
+        key = s3 key
+        bucket = optional, defaults to 'default_bucket' section in config file
+        '''
+
+
+        io_bytes = io.BytesIO()
+        if bucket == None:
+            bucket = self.DEFAULT_BUCKET
+
+        bucket = self.conn.Bucket(bucket)
+        bucket.download_fileobj(key, io_bytes)
+
+        return io_bytes
 
 
     def del_key(self, key, bucket=None):
