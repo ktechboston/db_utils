@@ -68,7 +68,7 @@ Basic Usage:
     default_bucket=
 ```
 
-Loading large data set into memory in chunks
+example) Loading large data set into memory in chunks
 ```
     >>> from db_utils.snowflake_connect import snowflake_s3
     >>> import os
@@ -121,6 +121,17 @@ Basic Usage:
     >>> s3.list_keys(prefix='examples')
 
 ```
+
+example) grab file from s3 into memory as stringIO object
+```
+    >>> from db_utils.s3_connect import s3_connect
+    >>>
+    >>> s3 = s3_connect('.databases.conf', 's3')
+    >>> s3.get_contents('example_file', stringIO=True)
+    >>> s3.read()
+
+```
+
 
 ### dynamodb_connect class
 Connection library for interacting with Dynamodb
