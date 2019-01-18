@@ -12,14 +12,15 @@ COMPRESSION = NONE
 
 
 with snowflake_s3(config_file=config_file, db_name='snowflake') as db:
-    rows = db.cursor('select email, clicks from aib.deploy_comp limit 1000000', 'joe/test_chunkz', file_format=file_format, pprint=True)
+    rows = db.cursor('SELECT * FROM aib.deploy_comp limit 100000', file_format=file_format, pprint=True)
     print(db.s3_queue)
     print(rows)
 
     while True:
-        key = db.fetch(dest='/home/joe/Desktop')
+        key = db.fetch(contents=True)
         if key:
-            print(key)
+            for i in key:
+                print(i)
 
         else:
             break

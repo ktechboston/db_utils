@@ -43,6 +43,55 @@ Basic Usage:
     password=password
     port=443
     database=test_db
+    aws_access_key_id=<key_id>
+    aws_secret_access_key=<secret_key>
+```
+
+### snowflake_s3 class
+A child class of snowflake_connect class used to retrieve large datasets in small chunks
+
+Basic Usage:
+ * create database configuration file
+ * example below is called .databases.conf
+ * note the additional fields required
+
+```
+    [snowflake]
+    account=abc123.us-east-1
+    host=abc123.us-east-1.snowflakecomputing.com
+    user=test_user
+    password=password
+    port=443
+    database=test_db
+    aws_access_key_id=<key_id>
+    aws_secret_access_key=<secret_key>
+    default_bucket=
+```
+
+Loading large data set into memory in chunks
+```
+    >>> from db_utils.snowflake_connect import snowflake_s3
+    >>> import os
+    >>>
+    >>> file_format = '''
+    TYPE = CSV
+    COMPRESSION = NONE
+    '''
+    >>>
+    >>>
+    >>> with snowflake_s3('snowflake', '.databases.conf') as db:
+    >>>     db.cursor('SELECT * FROM example_large_table', file_format=file_format, pprint=True)
+    >>>
+    >>>     while True:
+    >>>         file = db.fetch(contents=True)
+    >>>
+    >>>         if file:
+    >>>             for row in file:
+    >>>                 print(row)
+    >>>
+    >>>         else:
+    >>>             break
+
 
 ```
 

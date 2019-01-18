@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import sqlparse
 import configparser
+import uuid
 
 
 class snowflake_connect(db_connect):
@@ -226,7 +227,7 @@ class snowflake_s3(snowflake_connect):
         self.default_bucket = creds.get(self.db_name, 'default_bucket')
 
 
-    def cursor(self, query, s3_prefix, file_format=None, bucket=None, pprint=False):
+    def cursor(self, query, file_format=None, bucket=None, pprint=False):
         '''
         dumps large dataset to s3
 
@@ -236,8 +237,6 @@ class snowflake_s3(snowflake_connect):
             default_bucket=
 
         query <string> - sql statement
-        
-        s3_prefix <string> - location in s3 to dump data to
 
         file_format <string> - snowflake unload formatTypeOptions 
                                 https://docs.snowflake.net/manuals/sql-reference/sql/copy-into-table.html
@@ -251,10 +250,7 @@ class snowflake_s3(snowflake_connect):
         '''
 
         self.get_aws_creds()
-        check_prefix = self.s3conn.list_keys(prefix=s3_prefix)
-
-        if len(check_prefix) > 0:
-            raise Exception('Check s3_prefix.. already exists in s3 - {0}'.format(check_prefix[0]))
+        s3_prefix = 'db_utils/' + str(uuid.uuid4())
 
         if bucket == None:
             self.bucket = self.default_bucket
@@ -303,17 +299,25 @@ class snowflake_s3(snowflake_connect):
             raise Exception('Set either folder destination or contents=True for stringIO stream, not both')
 
         elif dest:
-            output = self.s3conn.download_file(key, dest_file=dest, bucket=self.bucket)
+            try:
+                output = self.s3conn.download_file(key, dest_file=dest, bucket=self.bucket)
+            except Exception as e:
+                self.close()
+                print(str(e))
 
         elif contents:
-            output = self.s3conn.get_contents(key, bucket=self.bucket, stringIO=True)
+            try:
+                output = self.s3conn.get_contents(key, bucket=self.bucket, stringIO=True)
+            except Exception as e:
+                self.close()
+                print(str(e))
 
         else:
             return None
 
         self.s3conn.del_key(key, bucket=self.bucket)
-        return output
 
+        return output
 
 
     def close(self):
@@ -321,7 +325,7 @@ class snowflake_s3(snowflake_connect):
         cleans up s3 queue
         '''
         for i in self.s3_queue:
-            print(self.s3conn.del_key(i, bucket=self.bucket))
+            self.s3conn.del_key(i, bucket=self.bucket)
 
 
     def __exit__(self, exc_type, exc_value, traceback):
