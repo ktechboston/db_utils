@@ -254,7 +254,7 @@ class snowflake_s3(snowflake_connect):
         check_prefix = self.s3conn.list_keys(prefix=s3_prefix)
 
         if len(check_prefix) > 0:
-            raise Exception('Check s3_prefix.. already exists in s3 - {}'.format(check_prefix[0]))
+            raise Exception('Check s3_prefix.. already exists in s3 - {0}'.format(check_prefix[0]))
 
         if bucket == None:
             self.bucket = self.default_bucket
@@ -284,16 +284,36 @@ class snowflake_s3(snowflake_connect):
         return len(keys)
 
 
-    def fetch(self):
+    def fetch(self, dest=None, contents=False):
         '''
+        dest <string> - path to folder to download s3 chunk to
+
+        contents <boolean> - returns stringIO stream rather than downloading s3 chunk
+
+        returns file pointer or stringIO stream from s3 file, must run cursor method first
         '''
+
         try:
             key = self.s3_queue.pop()
         except IndexError:
             return None
 
+
+        if dest and contents:
+            raise Exception('Set either folder destination or contents=True for stringIO stream, not both')
+
+        elif dest:
+            output = self.s3conn.download_file(key, dest_file=dest, bucket=self.bucket)
+
+        elif contents:
+            output = self.s3conn.get_contents(key, bucket=self.bucket, stringIO=True)
+
+        else:
+            return None
+
         self.s3conn.del_key(key, bucket=self.bucket)
-        return key
+        return output
+
 
 
     def close(self):

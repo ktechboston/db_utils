@@ -193,21 +193,33 @@ class s3_connect(object):
         dest_file = optional path to desired file output
         bucket = optional, defaults to 'default_bucket' section in config file
         '''
+
+        filename = key.split('/')[-1]
+
         if bucket == None:
             bucket = self.DEFAULT_BUCKET
+
         if dest_file == None:
-            dest_file = key.split('/')[-1]
+            path = key.split('/')[-1]
+        else:
+            path = os.path.join(dest_file, filename)
+
 
         bucket = self.conn.Bucket(bucket)
-        bucket.download_file(key, dest_file)
+        bucket.download_file(key, path)
 
-        return dest_file
+        return path
 
 
-    def get_contents(self, key, bucket=None):
+    def get_contents(self, key, bucket=None, stringIO=False):
         '''
-        key = s3 key
-        bucket = optional, defaults to 'default_bucket' section in config file
+        key <string> - s3 key
+
+        bucket <string> - optional, defaults to 'default_bucket' section in config file
+
+        stringIO <boolean> - optional, will return stringIO stream
+
+        returns BytesIO stream
         '''
 
 
@@ -217,6 +229,10 @@ class s3_connect(object):
 
         bucket = self.conn.Bucket(bucket)
         bucket.download_fileobj(key, io_bytes)
+
+        if stringIO == True:
+            io_string = io.StringIO(io_bytes.getvalue().decode('utf-8'))
+            return io_string
 
         return io_bytes
 
