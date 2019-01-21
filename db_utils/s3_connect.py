@@ -33,10 +33,12 @@ class s3_connect(object):
 
         '''
         creds = configparser.ConfigParser()
-        creds.read(config_file)
-        self.DEFAULT_BUCKET=creds.get(section, 'default_bucket')
-        self.access_key = creds.get(section, 'aws_access_key_id')
-        self.secret_key = creds.get(section, 'aws_secret_access_key')
+        self.config_file = config_file
+        self.section = section
+        creds.read(self.config_file)
+        self.DEFAULT_BUCKET=creds.get(self.section, 'default_bucket')
+        self.access_key = creds.get(self.section, 'aws_access_key_id')
+        self.secret_key = creds.get(self.section, 'aws_secret_access_key')
         
         self.conn = boto3.resource(
             's3',
@@ -80,17 +82,8 @@ class s3_connect(object):
     def upload_model(self, model, file_location, model_type, bucket=None, pkl_model_type='', append_ts=False, suffix='csv'):
         '''
         bucket = optional, defaults to 'default_bucket' section in config file
-        model = ('complaints_first_send',
-                'complaints_next_send',
-                'offer_recommender_v2_2',
-                'offer_recommender_v2_3',
-                'offer_recommender_v2_4',
-                'complaint_model_v2_0',
-                'complaint_model_v2_1',
-                'reactivation_model_v2_1',
-                'reactivation_model_v2_2',
-                'reactivation_model_v2_3',
-                'conversion_model_v1_0')
+        
+        model = comma delimited list of valid model names in .databases.conf file
 
         file_location = path to file
 
@@ -104,19 +97,10 @@ class s3_connect(object):
         returns dict {'bucket': <bucket>, 'key': <key>}
 
         '''
-        valid_models = (
-            'complaints_first_send',
-            'complaints_next_send',
-            'offer_recommender_v2_2',
-            'offer_recommender_v2_3',
-            'offer_recommender_v2_4',
-            'complaint_model_v2_0',
-            'complaint_model_v2_1',
-            'reactivation_model_v2_1',
-            'reactivation_model_v2_2',
-            'reactivation_model_v2_3',
-            'conversion_model_v1_0'
-            )
+        creds = configparser.ConfigParser()
+        self.config_file = config_file
+        creds.read(self.config_file)
+        valid_models = tuple(creds.get(self.section, 'model'))
 
         types = ('input', 'output', 'pickled_model')
 
