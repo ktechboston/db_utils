@@ -282,8 +282,8 @@ class snowflake_s3(snowflake_connect):
 
     def fetch(self, dest=None, contents=False):
         '''
-        dest <string> - path to folder to download s3 chunk to
-
+        dest <string> - path to file
+        
         contents <boolean> - returns stringIO stream rather than downloading s3 chunk
 
         returns file pointer or stringIO stream from s3 file, must run cursor method first

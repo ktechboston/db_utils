@@ -185,12 +185,10 @@ class s3_connect(object):
 
         if dest_file == None:
             path = key.split('/')[-1]
-        else:
-            path = os.path.join(dest_file, filename)
 
 
         bucket = self.conn.Bucket(bucket)
-        bucket.download_file(key, path)
+        bucket.download_file(key, dest_file)
 
         return path
 
