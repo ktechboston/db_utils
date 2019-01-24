@@ -1,6 +1,6 @@
 from db_utils.timer import timer
 from db_utils.db_connect import db_connect
-from db_utils.s3_connect import s3_connect
+from db_utils.s3_connect import s3_connect, snowflake_dmpky
 from snowflake.connector import DictCursor
 from pprint import pprint as pretty_print
 from jinja2 import Template
@@ -10,6 +10,7 @@ import pandas as pd
 import sqlparse
 import configparser
 import uuid
+import io
 
 
 class snowflake_connect(db_connect):
@@ -209,6 +210,7 @@ class snowflake_s3(snowflake_connect):
         self.config_file = config_file
         self.s3_queue = []
         self.bucket = None
+        self.s3_prefix = None
         self.s3conn = s3_connect(self.config_file, self.db_name)
 
 
@@ -250,12 +252,12 @@ class snowflake_s3(snowflake_connect):
         '''
 
         self.get_aws_creds()
-        s3_prefix = 'db_utils/' + str(uuid.uuid4())
+        self.s3_prefix = 'db_utils/' + str(uuid.uuid4())
 
         if bucket == None:
             self.bucket = self.default_bucket
 
-        s3 = 's3://{0}/{1}'.format(self.bucket, s3_prefix)
+        s3 = 's3://{0}/{1}'.format(self.bucket, self.s3_prefix)
         
         dump_vars = {
             's3': s3,
@@ -274,8 +276,11 @@ class snowflake_s3(snowflake_connect):
         SINGLE = FALSE''')
 
         self.copy_into(s3_dump.render(dump_vars), pprint=pprint)
-        keys = self.s3conn.list_keys(prefix=s3_prefix)
-        self.s3_queue = [i for i in reversed(keys)]
+        keys = self.s3conn.list_keys(prefix=self.s3_prefix)
+        s3_keys = [snowflake_dmpky(key) for key in keys]
+        s3_keys.sort(reverse=True)
+
+        self.s3_queue = s3_keys
 
         return len(keys)
 
@@ -290,7 +295,7 @@ class snowflake_s3(snowflake_connect):
         '''
 
         try:
-            key = self.s3_queue.pop()
+            key = str(self.s3_queue.pop())
         except IndexError:
             return None
 
@@ -324,8 +329,13 @@ class snowflake_s3(snowflake_connect):
         '''
         cleans up s3 queue
         '''
-        for i in self.s3_queue:
-            self.s3conn.del_key(i, bucket=self.bucket)
+
+        if self.s3_queue:
+            for i in self.s3_queue:
+                self.s3conn.del_key(str(i), bucket=self.bucket)
+
+        if self.s3_prefix:
+            self.s3conn.del_key(self.s3_prefix)
 
 
     def __exit__(self, exc_type, exc_value, traceback):

@@ -1,4 +1,3 @@
-# Imports
 from datetime import datetime
 from pprint import pprint
 import io
@@ -6,6 +5,7 @@ import configparser
 import boto3
 import csv
 import os
+import re
 
 # S3 Object
 class s3_connect(object):
@@ -230,3 +230,49 @@ class s3_connect(object):
             bucket = self.DEFAULT_BUCKET
 
         return self.conn.Object(bucket, key).delete()
+
+
+
+class snowflake_dmpky(object):
+    '''
+    helper class to help porperly sort snowflake s3 dumps
+
+    i.e.
+    data_0_0_0.csv
+    data_0_0_1.csv
+    .
+    .
+    data_0_0_10.csv
+    .
+    .
+    data_0_0_100.csv
+
+    '''
+    def __init__(self, key):
+        pattern = re.compile('_(\d\d|\d)_(\d\d|\d)_(\d\d\d\d|\d\d\d|\d\d|\d)')
+        pattern.search(key)
+
+        match = pattern.search(key)
+
+        if match:
+            suffix = match.group(0).split('_')
+            self.server = int(suffix[1])
+            self.thread = int(suffix[2])
+            self.round = int(suffix[3])
+            self.key = key
+        else:
+            raise Exception('{0} Not a valid snowflake dump key - i.e. _0_0_0'.format(key))
+
+    def __lt__(self, other):
+        return (self.server, self.thread, self.round) < (other.server, other.thread, other.round) 
+
+    def __gt__(self, other):
+        return (self.server, self.thread, self.round) > (other.server, other.thread, other.round)
+
+    def __repr__(self):
+        return repr(self.key)
+
+    def __str__(self):
+        return self.key
+
+
