@@ -99,7 +99,7 @@ class s3_connect(object):
         '''
         creds = configparser.ConfigParser()
         creds.read(self.config_file)
-        valid_models = tuple(creds.get(self.section, 'model').split(','))
+        valid_models = tuple(creds.get(self.section, 'models').split(','))
 
         types = ('input', 'output', 'pickled_model')
 
