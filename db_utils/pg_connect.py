@@ -223,11 +223,13 @@ class pg_connect(db_connect):
             try:                
                 cur.execute(query, params)
                 conn.commit()
+                data = cur.fetchall()
+
             finally:
                 self.close_conn()
             
             
 
-            return cur.fetchall()
+            return data
     
 

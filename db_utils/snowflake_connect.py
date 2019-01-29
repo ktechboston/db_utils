@@ -85,12 +85,11 @@ class snowflake_connect(db_connect):
             try:                
                 cur.execute(query, params)
                 conn.commit()
+                data = cur.fetchall()
             finally:
                 self.close_conn()
             
-            
-
-            return cur.fetchall()
+            return data
 
 
     def copy_into(self, query, pprint=False):
@@ -145,6 +144,7 @@ class snowflake_connect(db_connect):
                 if pprint == True:
                     clock.print_lap('m')
                     pretty_print(data)
+            
             finally:
                 self.close_conn()
 
@@ -181,6 +181,7 @@ class snowflake_connect(db_connect):
                 data = cur.fetchall()
                 columns = [desc[0] for desc in cur.description]
                 conn.commit()
+            
             finally:
                 cur.close()
                 self.close_conn()

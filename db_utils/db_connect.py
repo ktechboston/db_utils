@@ -177,9 +177,9 @@ class db_connect():
                     row_counts.append(cur.rowcount)
                 conn.commit()
             except Exception as e:
-                print(str(e))
                 print('Rolling back transacation')
                 conn.rollback()
+                raise Exception(str(e))
             finally:
                 self.close_conn()
         
