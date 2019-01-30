@@ -99,8 +99,9 @@ class s3_connect(object):
         '''
         creds = configparser.ConfigParser()
         creds.read(self.config_file)
-        valid_models = tuple(creds.get(self.section, 'models').split(','))
+        valid_models = tuple([i.strip() for i in creds.get(self.section, 'models').split(',')])
 
+        pprint(valid_models)
         types = ('input', 'output', 'pickled_model')
 
         pkl_model_types = ('scaler', 'random_forest', 'collaborative_filter', 'lstm', 'deep')
