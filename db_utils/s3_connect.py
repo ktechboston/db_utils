@@ -104,7 +104,7 @@ class s3_connect(object):
         pprint(valid_models)
         types = ('input', 'output', 'pickled_model')
 
-        pkl_model_types = ('scaler', 'random_forest', 'collaborative_filter', 'lstm', 'deep')
+        pkl_model_types = ('', 'scaler', 'traditional', 'deep', 'random_forest', 'collaborative_filter', 'lstm')
 
         if model not in valid_models:
             raise TypeError('model must be {0}'.format(valid_models))
@@ -112,9 +112,7 @@ class s3_connect(object):
         if model_type not in types:
             raise TypeError('model_type must be {0}'.format(types))
 
-        if model_type == 'pickled_model' and pkl_model_type == '':
-            raise TypeError('pkl_model_type must be of type {0}'.format(pkl_model_types))
-        elif model_type == 'pickled_model' and pkl_model_type not in pkl_model_types:
+        if model_type == 'pickled_model' and pkl_model_type not in pkl_model_types:
             raise TyperError('pkl_model_type must be {0}'.format(pkl_model_types))
 
 
