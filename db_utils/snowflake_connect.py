@@ -286,9 +286,9 @@ class snowflake_s3(snowflake_connect):
         return len(keys)
 
 
-    def fetch(self, dest=None, contents=False):
+    def fetch(self, download=False, gz=True):
         '''
-        dest <string> - path to file
+        download <string> - path to file
         
         contents <boolean> - returns stringIO stream rather than downloading s3 chunk
 
@@ -301,28 +301,22 @@ class snowflake_s3(snowflake_connect):
             return None
 
 
-        if dest and contents:
-            raise Exception('Set either folder destination or contents=True for stringIO stream, not both')
-
-        elif dest:
+        if download==True:
             try:
-                output = self.s3conn.download_file(key, dest_file=dest, bucket=self.bucket)
+                output = self.s3conn.download_file(key, bucket=self.bucket)
             except Exception as e:
                 self.close()
-                print(str(e))
-
-        elif contents:
-            try:
-                output = self.s3conn.get_contents(key, bucket=self.bucket, stringIO=True)
-            except Exception as e:
-                self.close()
-                print(str(e))
+                raise Exception(str(e))
 
         else:
-            return None
+            try:
+                output = self.s3conn.get_contents(key, bucket=self.bucket, gz=gz)
+            except Exception as e:
+                self.close()
+                raise Exception(str(e))
+
 
         self.s3conn.del_key(key, bucket=self.bucket)
-
         return output
 
 

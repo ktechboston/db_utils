@@ -6,6 +6,9 @@ import boto3
 import csv
 import os
 import re
+import gzip
+import zlib
+
 
 # S3 Object
 class s3_connect(object):
@@ -195,15 +198,15 @@ class s3_connect(object):
         return path
 
 
-    def get_contents(self, key, bucket=None, stringIO=False):
+    def get_contents(self, key, bucket=None, gz=False):
         '''
         key <string> - s3 key
 
         bucket <string> - optional, defaults to 'default_bucket' section in config file
 
-        stringIO <boolean> - optional, will return stringIO stream
+        gz <boolean> - decompress gzipped content
 
-        returns BytesIO stream
+        returns file like object StringIO
         '''
 
 
@@ -214,11 +217,12 @@ class s3_connect(object):
         bucket = self.conn.Bucket(bucket)
         bucket.download_fileobj(key, io_bytes)
 
-        if stringIO == True:
-            io_string = io.StringIO(io_bytes.getvalue().decode('utf-8'))
-            return io_string
+        if gz==True:
+            bytes = gzip.decompress(io_bytes.getbuffer())
+            return io.StringIO(bytes.decode('utf-8'))
 
-        return io_bytes
+        io_string = io.StringIO(io_bytes.getvalue().decode('utf-8'))
+        return io_string
 
 
     def del_key(self, key, bucket=None):
