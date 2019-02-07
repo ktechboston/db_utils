@@ -288,9 +288,9 @@ class snowflake_s3(snowflake_connect):
 
     def fetch(self, download=False, gz=True):
         '''
-        download <string> - path to file
+        download <boolean> - if set to True downloads the s3 chunk to your current working directory
         
-        contents <boolean> - returns stringIO stream rather than downloading s3 chunk
+        gz <boolean> - by default s3 chunks are gzipped, if data explicitly not compressed set to False
 
         returns file pointer or stringIO stream from s3 file, must run cursor method first
         '''
