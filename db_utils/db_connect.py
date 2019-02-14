@@ -163,6 +163,8 @@ class db_connect():
         '''
         row_counts = []
         conn = self.connect_to_db()
+        queries.insert(0, 'BEGIN;')
+        
         with conn.cursor() as cur:
             try:
                 for query in queries:
