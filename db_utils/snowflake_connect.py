@@ -151,7 +151,7 @@ class snowflake_connect(db_connect):
                     raise snowflake.connector.errors.ProgrammingError('{}'.format(data[0]))
                 
                 elif status=='PARTIALLY_LOADED':
-                    warnings.warn('')
+                    warnings.warn('partially load - {0}'.format(data[0].get('first_error')))
 
             
             finally:
