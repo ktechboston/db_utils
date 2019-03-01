@@ -11,6 +11,7 @@ import sqlparse
 import configparser
 import uuid
 import io
+import warnings
 
 
 class snowflake_connect(db_connect):
@@ -144,6 +145,14 @@ class snowflake_connect(db_connect):
                 if pprint == True:
                     clock.print_lap('m')
                     pretty_print(data)
+
+                status = data[0].get('status')
+                if status=='LOAD_FAILED':
+                    raise snowflake.connector.errors.ProgrammingError('{}'.format(data[0]))
+                
+                elif status=='PARTIALLY_LOADED':
+                    warnings.warn('')
+
             
             finally:
                 self.close_conn()
