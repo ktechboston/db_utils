@@ -90,7 +90,7 @@ class s3_connect(object):
 
         file_location = path to file
 
-        model_type = (input | output | pickled_model)
+        model_type = (input | output | pickled_model | testing)
         pkl_model_type = (scaler |random_forest | collaborative_filter)
 
         append_ts = Boolean appends SQL friendly timestamp col to CSV file
@@ -105,7 +105,7 @@ class s3_connect(object):
         valid_models = tuple([i.strip() for i in creds.get(self.section, 'models').split(',')])
 
         pprint(valid_models)
-        types = ('input', 'output', 'pickled_model')
+        types = ('input', 'output', 'pickled_model', 'testing')
 
         pkl_model_types = ('', 'scaler', 'traditional', 'deep', 'random_forest', 'collaborative_filter', 'lstm')
 
