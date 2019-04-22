@@ -11,6 +11,9 @@ import sqlparse
 #implement custom mysql custom cursor
 
 
+
+#documentation link:
+#https://dev.mysql.com/doc/connector-python/en/connector-python-reference.html
 class mysql_connect(db_connect):
 
     def connect_to_db(self):
