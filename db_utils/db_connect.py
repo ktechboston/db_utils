@@ -6,7 +6,6 @@ import configparser
 import sqlparse
 
 
-
 class db_connect():
     '''
     parent python database connection class utilizing
