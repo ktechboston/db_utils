@@ -96,8 +96,9 @@ class snowflake_connect(db_connect):
     def copy_into(self, query, pprint=False):
         '''
         use copy into method to send and load data to and from S3:
-            1) unload from s3 https://docs.snowflake.net/manuals/user-guide/data-unload-s3.html
-            2) copy from s3 https://docs.snowflake.net/manuals/user-guide/data-load-s3.html
+            https://docs.snowflake.net/manuals/sql-reference/sql/copy-into-table.html
+            1) unload to s3
+            2) copy from s3
 
         
         database.conf file must have s3 credentials i.e.
