@@ -1,3 +1,4 @@
+from db_utils import default_path
 from datetime import datetime
 from pprint import pprint
 import io
@@ -13,7 +14,7 @@ import zlib
 # S3 Object
 class s3_connect(object):
 
-    def __init__(self, config_file, section):
+    def __init__(self, config_file=default_path, section):
         '''
         provide config file with options:
             aws_access_key_id

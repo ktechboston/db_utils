@@ -1,4 +1,5 @@
 from db_utils.timer import timer
+from db_utils import default_path
 import numpy as np
 import pandas as pd
 import sqlparse
@@ -12,7 +13,6 @@ class db_connect():
     python database API specification v2.0
     https://www.python.org/dev/peps/pep-0249/#connection-methods
     '''
-    default_path = os.path.join(os.environ['HOME'], '.databases.conf')
     
     def __init__(self, db_name=None, config_file=default_path):
         '''

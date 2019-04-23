@@ -32,9 +32,9 @@ class pg_connect(db_connect):
     port=5439
     database=test_db
 
-    >>> from db_utils.DBUtil import DBUtil
+    >>> from db_utils.pg_connect import pg_connect
     >>>
-    >>> db = DBUtil('redshift_example', '.databases.conf')
+    >>> db = pg_connect('redshift_example', '.databases.conf')
     >>> db.get_arr_from_query('select * from test', pprint=True)
 
 

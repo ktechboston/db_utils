@@ -95,18 +95,55 @@ class mysql_connect(db_connect):
         if pprint==True:
             print(self.format_sql(query))
 
-        with conn.cursor() as cur:
-            try:
-                cur.execute(query, params)
-                data = cur.fetchall()
-                columns = [desc[0] for desc in cur.description]
-                conn.commit()
-            finally:
-                cur.close()
-                self.close_conn()
+        cur = conn.cursor()
+        try:
+            cur.execute(query, params)
+            data = cur.fetchall()
+            columns = [desc[0] for desc in cur.description]
+            conn.commit()
+        finally:
+            cur.close()
+            self.close_conn()
 
         if pprint==True:
             clock.print_lap('m')
 
         df = pd.DataFrame(data, columns=columns)
         return df
+
+
+    def transaction(self, queries, pprint=False):
+        '''
+        method for creating transcations via psycopg2
+        important to use when a rollback must be called if the
+        entire series of queries do not successfully complete
+        
+        queries - list - sql statements
+        
+        returns list of row counts for each query
+        '''
+        row_counts = []
+        conn = self.connect_to_db()
+        queries.insert(0, 'BEGIN;')
+        
+        cur = conn.cursor()
+        try:
+            for query in queries:
+                clock = timer()
+                if pprint == True:
+                    print(self.format_sql(query))
+                cur.execute(query)
+                
+                if pprint == True:
+                    clock.print_lap('m')
+                    
+                row_counts.append(cur.rowcount)
+            conn.commit()
+        except Exception as e:
+            print('Rolling back transacation')
+            conn.rollback()
+            raise Exception(str(e))
+        finally:
+            self.close_conn()
+        
+        return row_counts
