@@ -4,7 +4,7 @@ import pandas as pd
 import sqlparse
 import configparser
 import sqlparse
-
+import os
 
 
 class db_connect():
@@ -13,8 +13,12 @@ class db_connect():
     python database API specification v2.0
     https://www.python.org/dev/peps/pep-0249/#connection-methods
     '''
-
-    def __init__(self, db_name=None, config_file=None):
+    default_path = os.path.join(os.environ['HOME'], '.databases.conf')
+    
+    def __init__(self, db_name=None, config_file=default_path):
+        '''
+        config_file <string> default configuration location ~/.databases.conf
+        '''
         if db_name is None: 
             raise Exception("Please provide db_name=the-section-in-your-config-file as an argument") 
         if config_file is None: 
