@@ -11,7 +11,7 @@ import sqlparse
 #implement custom mysql custom cursor
 
 class custom_cur(mysql.connector.cursor.CursorBase):
-https://github.com/mysql/mysql-connector-python/blob/master/lib/mysql/connector/connection.py#L861
+#https://github.com/mysql/mysql-connector-python/blob/master/lib/mysql/connector/connection.py#L861
 	def __exit__():
 		pass
 
@@ -75,3 +75,38 @@ class mysql_connect(db_connect):
             clock.print_lap('m')
         
         return row_count
+
+
+    def get_df_from_query(self, query, params=None, pprint=False):
+        '''
+        query <string> - sql statement
+        params optional <tuple> - user input variables to prevent sql injection
+                                  sql statement should be formated with question
+                                  marks where variables should be placed
+
+                                  e.g. WHERE username = %s
+        pprint optional <boolean> -  prints formated sql query and time to execute in minutes
+
+        returns a panadas dataframe
+        '''
+        clock = timer()
+        conn = self.connect_to_db()
+        
+        if pprint==True:
+            print(self.format_sql(query))
+
+        with conn.cursor() as cur:
+            try:
+                cur.execute(query, params)
+                data = cur.fetchall()
+                columns = [desc[0] for desc in cur.description]
+                conn.commit()
+            finally:
+                cur.close()
+                self.close_conn()
+
+        if pprint==True:
+            clock.print_lap('m')
+
+        df = pd.DataFrame(data, columns=columns)
+        return df
