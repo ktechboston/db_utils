@@ -10,6 +10,10 @@ import sqlparse
 ###TO DO
 #implement custom mysql custom cursor
 
+class custom_cur(mysql.connector.cursor.CursorBase):
+https://github.com/mysql/mysql-connector-python/blob/master/lib/mysql/connector/connection.py#L861
+	def __exit__():
+		pass
 
 
 #documentation link:
