@@ -2,6 +2,10 @@
 
 ## Installation
 
+Required system packages:
+ * apt-get install libpq-dev (Ubuntu)
+ * brew install postgresql (MacOS)
+
 ```
 pip install db_utils
 ```
