@@ -14,8 +14,8 @@ db.update_db('''
 
 
 rows = db.update_db('''
-	INSERT INTO test (a_col) values ('hello world');
-	''', pprint=True)
+	INSERT INTO test (a_col) values (%s);
+	''', pprint=True, params=('hello world',))
 
 print(rows)
 

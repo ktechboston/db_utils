@@ -12,8 +12,8 @@ import sqlparse
 
 class custom_cur(mysql.connector.cursor.CursorBase):
 #https://github.com/mysql/mysql-connector-python/blob/master/lib/mysql/connector/connection.py#L861
-	def __exit__():
-		pass
+    def __exit__():
+        pass
 
 
 #documentation link:
@@ -21,26 +21,26 @@ class custom_cur(mysql.connector.cursor.CursorBase):
 class mysql_connect(db_connect):
 
     def connect_to_db(self):
-	    db_name = self.db_name
-	    cp = configparser.ConfigParser()
-	    cp.read(self.config_file)
-	    password = cp.get(db_name, "password")
-	    user = cp.get(db_name, "user")
-	    database = cp.get(db_name, "database")
-	    host = cp.get(db_name, "host")
-	    port = cp.get(db_name, "port")
+        db_name = self.db_name
+        cp = configparser.ConfigParser()
+        cp.read(self.config_file)
+        password = cp.get(db_name, "password")
+        user = cp.get(db_name, "user")
+        database = cp.get(db_name, "database")
+        host = cp.get(db_name, "host")
+        port = cp.get(db_name, "port")
 
 
-	    kwargs = {
-	            "host":host,
-	            "password":password,
-	            "user":user,
-	            "database":database, 
-	            "port":port
-	            }
+        kwargs = {
+                "host":host,
+                "password":password,
+                "user":user,
+                "database":database, 
+                "port":port
+                }
 
-	    self.conn = mysql.connector.connect(**kwargs)
-	    return self.conn
+        self.conn = mysql.connector.connect(**kwargs)
+        return self.conn
 
 
 
@@ -114,7 +114,7 @@ class mysql_connect(db_connect):
 
     def transaction(self, queries, pprint=False):
         '''
-        method for creating transcations via psycopg2
+        method for creating transcations
         important to use when a rollback must be called if the
         entire series of queries do not successfully complete
         
