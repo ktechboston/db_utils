@@ -9,6 +9,7 @@ import sqlparse
 
 ###TO DO
 #implement custom mysql custom cursor
+#add connection pooling
 
 class custom_cur(mysql.connector.cursor.CursorBase):
 #https://github.com/mysql/mysql-connector-python/blob/master/lib/mysql/connector/connection.py#L861

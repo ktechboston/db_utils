@@ -14,7 +14,7 @@ import zlib
 # S3 Object
 class s3_connect(object):
 
-    def __init__(self, config_file=default_path, section):
+    def __init__(self, config_file=default_path, section='s3'):
         '''
         provide config file with options:
             aws_access_key_id
