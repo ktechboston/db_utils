@@ -2,6 +2,7 @@ import boto3
 import os
 import configparser
 import json
+from db_utils import default_path
 from pprint import pprint
 from decimal import Decimal
 from boto3.dynamodb.types import TypeSerializer, TypeDeserializer
@@ -13,7 +14,7 @@ from botocore.config import Config
 
 class dynamodb_connect():
 
-    def __init__(self, config_file, section):
+    def __init__(self, section, config_file=default_path):
         '''
         provide config file with options:
             aws_access_key_id
