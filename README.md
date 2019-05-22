@@ -106,6 +106,17 @@ API specification v2.0 https://www.python.org/dev/peps/pep-0249/#connection-meth
 use the connection classes above specific to the flavor of db you're using
 
 
+### sqlite_connect class
+A database connection class to interact with SQLite
+
+```
+
+    >>> from db_utils.sqlite_connect import sqlite_connect
+    >>>
+    >>> db = sqlite_connect('test.db')
+    >>> db.get_df_from_query('select * from test_table', pprint=True)
+```
+
 ### s3_connect class
 Connection library for interacting with S3
 
