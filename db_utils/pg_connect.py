@@ -61,7 +61,7 @@ class pg_connect(db_connect):
         self.conn = psycopg2.connect(**kwargs)
         return self.conn
 
-    def get_df_from_query(self, query, params=None, pprint=False, to_df=True, server_cur=False, itersize=20000, commit=True):
+    def get_df_from_query(self, query, params=None, pprint=False, to_df=True, server_cur=False, itersize=1000, commit=True):
         clock = timer()
         conn = self.connect_to_db()
         
