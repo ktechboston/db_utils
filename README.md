@@ -147,6 +147,30 @@ example) grab file from s3 into memory as stringIO object
 
 ```
 
+### sql server connect class
+
+Requirements: 
+ * sql server drivers - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-2017
+
+Basic Usage:
+ * add sql server section to .databases.conf file (created in previous example)
+
+
+```
+    [sql_server]
+    driver=ODBC Driver 17 for SQL Server
+    server=127.0.0.1
+    user=bill
+    password=gates
+    database=master
+
+    >>> from db_utils.sql_server_connect import sql_server_connect
+    >>> db = sql_server_connect('sql_server', 'databases.conf')
+    >>>
+    >>> db.get_arr_from_query('''SELECT * FROM SYSOBJECTS''', pprint=True))
+```
+
+
 
 ### dynamodb_connect class
 Connection library for interacting with Dynamodb
