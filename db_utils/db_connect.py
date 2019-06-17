@@ -23,12 +23,17 @@ class db_connect():
         if config_file is None: 
             raise Exception("Please provide config_file=/path/to/your/file as an argument") 
         try: 
-            open(config_file)
+            cp = configparser.ConfigParser()
+            cp.read(config_file)
         except: 
             raise Exception("Cannot open config_file. Please check the path to your config files") 
 
+        config_dict = {}
+        [config_dict.__setitem__(i, cp.get(db_name, i)) for i in cp.options(db_name)]
+
         self.db_name = db_name
         self.config_file = config_file
+        self.config_dict = config_dict
 
 
     def connect_to_db(self):
