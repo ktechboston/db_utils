@@ -109,6 +109,7 @@ class pg_connect(db_connect):
         if batched == False: self.write_arr_to_table(arr, tablename, columns, new_table)
         if batched == True: self.batch_write_arr_to_table(arr, tablename, columns, pkeys, new_table)
 
+
     def write_arr_to_table(self, arr, tablename, columns, new_table=True):
 
         conn = self.connect_to_db()
@@ -141,6 +142,7 @@ class pg_connect(db_connect):
         conn.commit()
         self.close_conn()
         return 0
+    
     
     def batch_write_arr_to_table(self, arr, tablename, columns, pkeys, new_table=True):
         conn = self.connect_to_db()
