@@ -1,26 +1,18 @@
-from db_utils.snowflake_connect import snowflake_connect
-from db_utils.pg_connect import pg_connect
+
+import sys
 import os
 from pprint import pprint
+sys.path.insert(0, '..')
+from db_utils.pg_connect import pg_connect
+from db_utils.timer import sql_ts
 
 
-config_file = os.path.join(os.environ['HOME'], '.databases.conf')
-db = pg_connect(db_name='redshift')
+config_file = 'databases.conf'
+db = pg_connect('postgres', config_file)
 
-db.connect_to_db()
+pgtables = db.get_df_from_query('SELECT * FROM pg_tables', pprint=True)
 
-
-print(db.get_df_from_query('select * from aib.deploy_comp where cam_date = %s limit 10', pprint=True, params=('2018-07-11',)))
-
-
-pprint(db.get_arr_from_query('select * from aib.deploy_comp where cam_date = %s limit 10', pprint=True, params=('2018-07-11',)))
+print(pgtables)
 
 
-db.update_db('create table if not exists ds_dev.test(col1 varchar)', pprint=True)
-
-db.transaction(['select * from ds_dev.test', "select 'a'"])
-
-
-#db.update_db('drop table if exists ds_dev.test', pprint=True)
-
-
+print(sql_ts('now'))
