@@ -61,6 +61,7 @@ class pg_connect(db_connect):
         self.conn = psycopg2.connect(**kwargs)
         return self.conn
 
+
     def get_df_from_query(self, query, params=None, pprint=False, to_df=True, server_cur=False, itersize=1000, commit=True):
         clock = timer()
         conn = self.connect_to_db()
@@ -235,3 +236,18 @@ class pg_connect(db_connect):
             return data
     
 
+    def csv_to_table(path, table_name, **kwargs):
+        '''
+        path <string> - location of csv file
+        **kwargs <optional> - https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv
+        
+        returns (table_name, rows successfully copied)
+        '''
+
+        df = pd.read_csv(path, **kwargs)
+        for col in df.columns:
+            col.lower().strip().replace(' ','_')
+            self.update_db('''
+            CREATE TABLE
+
+            ''',pprint=True)
