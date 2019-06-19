@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="db_utils",
-    version="0.4.2",
+    version="0.4.3",
     author="Komodo Technologies, LLC",
     description="Helper class to connect to Redshift, Snowflake, DynamoDB and S3",
     long_description=long_description,
