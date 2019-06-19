@@ -1,4 +1,4 @@
-,customer,day,current_purchase,first_purchase,previous_purchase,status_through_time
+index,CUSTOMER,day,current  purchase,first_purchase,previous_purchase,status through Time
 0,Amanda,2018-10-01,2018-10-01,2018-10-01,,NEW
 1,Amanda,2018-10-02,2018-10-01,2018-10-01,,NEW
 2,Amanda,2018-10-03,2018-10-01,2018-10-01,,NEW

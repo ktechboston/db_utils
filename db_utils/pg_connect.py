@@ -1,9 +1,10 @@
 from db_utils.timer import timer
 from db_utils.db_connect import db_connect
+from psycopg2.pool import SimpleConnectionPool
+from jinja2 import Template
 import psycopg2
 import psycopg2.extras
 import configparser
-from psycopg2.pool import SimpleConnectionPool
 import numpy as np
 import pandas as pd
 import sqlparse
@@ -236,18 +237,69 @@ class pg_connect(db_connect):
             return data
     
 
-    def csv_to_table(path, table_name, **kwargs):
+    def csv_to_table(self, path, table_name, **kwargs):
         '''
+        This function is meant to lower the bar to manipulating csv
+        data in postgres.  Table creation will be attempted based on the
+        csv header and the user provided <table_name>.
+
+        ex)
+        >>> from db_utils.pg_connect import pg_connect
+        >>>
+        >>> db = pg_connect('postgres')
+        >>> db.csv_to_table('sample.csv', 'orders')
+
+        
+
         path <string> - location of csv file
         **kwargs <optional> - https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv
         
-        returns (table_name, rows successfully copied)
+        returns (table_name, rows count dataframe)
         '''
 
-        df = pd.read_csv(path, **kwargs)
-        for col in df.columns:
-            col.lower().strip().replace(' ','_')
-            self.update_db('''
-            CREATE TABLE
+        df = pd.read_csv(path, index_col=False, **kwargs)
+        new_cols = [col.lower().strip().replace(' ','_') for col in df.columns]
 
-            ''',pprint=True)
+        tmp_vars = {
+            'new_cols': new_cols,
+            'table_name': table_name.lower().strip().replace(' ','_')
+            }
+
+        template = Template('''
+        CREATE TABLE {{ table_name }}
+        ({% for cols in new_cols %}{% set rowloop = loop %}
+            {% if loop.last %}
+            {{ cols }} varchar
+            {% else %}
+            {{ cols }} varchar,
+            {% endif %}
+        {% endfor %});
+            ''')
+
+        create_table_sql = template.render(**tmp_vars)
+        self.update_db(create_table_sql, pprint=True)
+        
+        try:
+            with open(path, 'r') as csvfl:
+                self.copy_expert(
+                '''
+                COPY {table_name}
+                FROM STDIN
+                WITH (
+                    FORMAT csv,
+                    HEADER true,
+                    ENCODING 'UTF-8'
+                    )
+                '''.format(**tmp_vars),
+                csvfl, 
+                pprint=True
+                    )
+
+            count = self.get_df_from_query('SELECT COUNT(*) FROM {table_name}'.format(**tmp_vars), pprint=True)
+            print(count, 'rows successfully loaded')
+            return table_name, count 
+        except Exception as e:
+            print(str(e))
+            self.update_db('DROP TABLE {table_name}'.format(**tmp_vars), pprint=True)
+
+
