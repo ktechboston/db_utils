@@ -240,9 +240,9 @@ class pg_connect(db_connect):
     def csv_to_table(self, path, table_name, **kwargs):
         '''
         This function is meant to lower the bar to manipulating csv
-        data in postgres.  Table creation will be attempted based on the
-        csv header and the user provided <table_name>.
-
+        data in postgres.  It will attempt to make table columns 
+        based on the csv header and the user provided <table_name>.
+        
         ex)
         >>> from db_utils.pg_connect import pg_connect
         >>>
@@ -251,7 +251,7 @@ class pg_connect(db_connect):
 
         
 
-        path <string> - location of csv file
+        path <string> - location of csv file (must be UTF-8 encoded)
         **kwargs <optional> - https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv
         
         returns (table_name, rows count dataframe)
