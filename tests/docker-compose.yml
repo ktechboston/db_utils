@@ -17,3 +17,12 @@ services:
         environment:
           ACCEPT_EULA: Y
           SA_PASSWORD: sql_server_password
+
+    postgres:
+        image: postgres:9.6
+        environment:
+          POSTGRES_USER: dbu
+          POSTGRES_PASSWORD: example
+          POSTGRES_DB: dbutils
+        ports:
+          - 5420:5432

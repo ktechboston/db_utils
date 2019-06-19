@@ -48,6 +48,9 @@ class timer(object):
             
 def ts_dict(TIMESTAMP):
     '''
+    TIMESTAMP <datetime obj>
+              use 'now' to return the current timestamp  
+    
     returns a timestamp dict with keys:
         * year YYYY
         * month MM
@@ -57,6 +60,9 @@ def ts_dict(TIMESTAMP):
         * sec SS
     '''
     
+    if TIMESTAMP == 'now':
+        TIMESTAMP = datetime.now()
+
     TIMESTAMP_DICT = {
             'year': TIMESTAMP.strftime('%Y'),
             'month': TIMESTAMP.strftime('%m'),
@@ -71,21 +77,40 @@ def ts_dict(TIMESTAMP):
 
 def sql_ts(TIMESTAMP):
     '''
+    TIMESTAMP <datetime obj>
+              use 'now' to return the current timestamp 
+
     returns sql like timestamp
     
     YYYY-MM-DD HH:MM:SS
     '''
+    if TIMESTAMP == 'now':
+        TIMESTAMP = datetime.now()
+    
     return TIMESTAMP.strftime('%Y-%m-%d %H:%M:%S')
 
 
 def s3_ts(TIMESTAMP):
     '''
+    TIMESTAMP <datetime obj>
+              use 'now' to return the current timestamp 
+
     returns s3 ts format /<year>/<month>/DD_HH:MM:SS
     '''
+
+    if TIMESTAMP == 'now':
+        TIMESTAMP = datetime.now()
     return TIMESTAMP.strftime('/%Y/%m/%d_%H:%M:%S')
+
 
 def s3_glue_ts(TIMESTAMP):
     '''
+    TIMESTAMP <datetime obj>
+              use 'now' to return the current timestamp 
+              
     returns s3 AWS glue friendly key parition
     '''
+    if TIMESTAMP == 'now':
+        TIMESTAMP = datetime.now()
+    
     return TIMESTAMP.strftime('''/year=%Y/month=%m/day=%d/%Y-%m-%d_%H:%M:%S''')
