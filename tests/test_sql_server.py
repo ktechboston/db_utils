@@ -7,8 +7,7 @@ from pprint import pprint
 
 db = sql_server_connect('sql_server', 'databases.conf')
 
-print(db.config_dict)
-out = db.get_arr_from_query('''
+db.get_arr_from_query('''
 SELECT
   *
 FROM
