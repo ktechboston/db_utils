@@ -280,7 +280,7 @@ class pg_connect(db_connect):
         self.update_db(create_table_sql, pprint=True)
         
         try:
-            with open(path, 'r') as csvfl:
+            with open(path, 'r', encoding='utf-8', errors='replace') as csvfl:
                 self.copy_expert(
                 '''
                 COPY {table_name}

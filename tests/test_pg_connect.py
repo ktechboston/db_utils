@@ -17,8 +17,8 @@ db = pg_connect('postgres', config_file)
 
 # print(sql_ts('now'))
 
-db.update_db('drop table if exists orders', pprint=True)
+db.update_db('drop table if exists errors', pprint=True)
 db.update_db('drop table if exists banqi;')
-db.csv_to_table('sample.csv', 'orders')
+db.csv_to_table('errors_android_screens_utf.csv', 'errors')
 
-#print(db.get_df_from_query('select * from orders', pprint=True).head())
+print(db.get_df_from_query('select * from errors limit 10', pprint=True).head())
