@@ -4,6 +4,7 @@
 
 Required system packages:
  * apt-get install libpq-dev (Ubuntu)
+ * apt-get install unixodbc-dev (Ubuntu)
  * brew install postgresql (MacOS)
 
 ```
