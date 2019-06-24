@@ -237,12 +237,14 @@ class pg_connect(db_connect):
             return data
     
 
-    def csv_to_table(self, path, table_name, **kwargs):
+    def csv_to_table(self, path, table_name, append=False, **kwargs):
         '''
         This function is meant to lower the bar to manipulating csv
         data in postgres.  It will attempt to make table columns 
         based on the csv header and the user provided <table_name>.
         
+        Note: this functionality is not available for Redshift.
+              See COPY FROM 's3' https://docs.aws.amazon.com/redshift/latest/dg/r_COPY.html
         ex)
         >>> from db_utils.pg_connect import pg_connect
         >>>
@@ -265,19 +267,20 @@ class pg_connect(db_connect):
             'table_name': table_name.lower().strip().replace(' ','_')
             }
 
-        template = Template('''
-        CREATE TABLE {{ table_name }}
-        ({% for cols in new_cols %}{% set rowloop = loop %}
-            {% if loop.last %}
-            {{ cols }} varchar
-            {% else %}
-            {{ cols }} varchar,
-            {% endif %}
-        {% endfor %});
-            ''')
+        if append==False:
+            template = Template('''
+            CREATE TABLE {{ table_name }}
+            ({% for cols in new_cols %}{% set rowloop = loop %}
+                {% if loop.last %}
+                {{ cols }} varchar
+                {% else %}
+                {{ cols }} varchar,
+                {% endif %}
+            {% endfor %});
+                ''')
 
-        create_table_sql = template.render(**tmp_vars)
-        self.update_db(create_table_sql, pprint=True)
+            create_table_sql = template.render(**tmp_vars)
+            self.update_db(create_table_sql, pprint=True)
         
         try:
             with open(path, 'r', encoding='utf-8', errors='replace') as csvfl:
@@ -300,6 +303,8 @@ class pg_connect(db_connect):
             return table_name, count 
         except Exception as e:
             print(str(e))
-            self.update_db('DROP TABLE {table_name}'.format(**tmp_vars), pprint=True)
+            
+            if append==False:
+                self.update_db('DROP TABLE {table_name}'.format(**tmp_vars), pprint=True)
 
 
