@@ -143,7 +143,7 @@ class mysql_connect(db_connect):
         except Exception as e:
             print('Rolling back transacation')
             conn.rollback()
-            raise Exception(str(e))
+            raise mysql.connector.errors.ProgrammingError(str(e))
         finally:
             self.close_conn()
         

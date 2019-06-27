@@ -118,8 +118,8 @@ class pg_connect(db_connect):
 
         column_str = "({0})".format( ",".join(columns))
         column_def = "({0} varchar(256) )".format( " varchar(256),".join(columns))
+        #null_conv = lambda x: '' if x == None or x.lower() == 'nan' else x
         value_str = "({0})".format( ",".join(["%s" for c in columns]))
-
         sql = "insert into {0} {1} values {2};".format(tablename, column_str, value_str)
 
         try:
@@ -166,7 +166,9 @@ class pg_connect(db_connect):
                 data.append(str(tuple(row)))
                 if (len(data) == 20000) or (c == len(arr)):
                     value_str = ', '.join(data)
-                    sql = "insert into {0} {1} values {2};".format(tablename, column_str, value_str)
+                    null_conv = lambda x: '' if x == None or x.lower() == 'nan' else x
+
+                    sql = "insert into {0} {1} values {2};".format(tablename, column_str, null_conv(value_str))
                     try: cur.execute(sql)
                     except Exception as e:
                         print(e); self.close_conn()

@@ -17,6 +17,7 @@ services:
         environment:
           ACCEPT_EULA: Y
           SA_PASSWORD: sql_server_password
+          secure_file_priv: ''
 
     postgres:
         image: postgres:9.6
