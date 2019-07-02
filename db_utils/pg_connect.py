@@ -239,6 +239,8 @@ class pg_connect(db_connect):
             return data
     
 
+    def get_arr_from_query():
+        
     def csv_to_table(self, path, table_name, append=False, **kwargs):
         '''
         This function is meant to lower the bar to manipulating csv

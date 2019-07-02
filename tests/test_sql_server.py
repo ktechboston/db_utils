@@ -1,13 +1,18 @@
+import unittest
+
 import os
 import sys
 sys.path.insert(0, '..')
 from db_utils.sql_server_connect import sql_server_connect
 from pprint import pprint
 
+# class TestSqlServer(self):
+
+	# def test_update_db(self):
 
 db = sql_server_connect('sql_server', 'databases.conf')
 
-db.get_arr_from_query('''
+out=db.get_arr_from_query('''
 SELECT
   *
 FROM
@@ -17,7 +22,7 @@ WHERE
 ''', pprint=True
 	)
 
-print(out)
+pprint(out)
 
 db.update_db('drop table persons', pprint=True)
 

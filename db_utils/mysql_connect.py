@@ -148,3 +148,5 @@ class mysql_connect(db_connect):
             self.close_conn()
         
         return row_counts
+
+        
