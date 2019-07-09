@@ -1,17 +1,17 @@
-from db_utils import *
+# from db_utils import *
 
 
-# from db_utils import default_path
+import configparser
+import gzip
+import io
+import os
+import re
 from datetime import datetime
-# from pprint import pprint
-# import io
-# import configparser
-# import boto3
-# import csv
-# import os
-# import re
-# import gzip
-# import zlib
+from pprint import pprint
+
+import boto3
+
+from db_utils import default_path
 
 
 # S3 Object
