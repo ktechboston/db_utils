@@ -1,13 +1,15 @@
-import boto3
-import os
-import configparser
-import json
-from db_utils import default_path
-from pprint import pprint
-from decimal import Decimal
-from boto3.dynamodb.types import TypeSerializer, TypeDeserializer
+from db_utils import *
 from db_utils.DBUtil import DBUtil
-from botocore.config import Config
+
+# import boto3
+# import os
+# import configparser
+# import json
+# from db_utils import default_path
+# from pprint import pprint
+# from decimal import Decimal
+# from boto3.dynamodb.types import TypeSerializer, TypeDeserializer
+# from botocore.config import Config
 
 
 

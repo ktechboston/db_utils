@@ -1,11 +1,12 @@
+from db_utils import *
 from db_utils.timer import timer
-from db_utils import default_path
-import numpy as np
-import pandas as pd
-import sqlparse
-import configparser
-import sqlparse
-import os
+
+# import numpy as np
+# import pandas as pd
+# import sqlparse
+# import configparser
+# import sqlparse
+# import os
 
 class db_connect():
 	'''
@@ -218,6 +219,10 @@ class db_connect():
 				self.close_conn()
 		
 		return row_counts
+
+	# def write_df_to_table():
+
+	# def write_arr_to_table():
 
 
 	def close_conn(self):

@@ -1,3 +1,4 @@
+# from db_utils import *
 from db_utils.db_connect import db_connect
 from db_utils.timer import timer
 import numpy as np
@@ -88,16 +89,18 @@ class sqlite_connect(db_connect):
 		if pprint == True:
 			print(self.format_sql(query))
 
-		with conn.cursor() as cur:
-			if params:
-				cur.execute(query, params)
-			else:
-				cur.execute(query)
+		cur = conn.cursor()
+		if params:
+			cur.execute(query, params)
+		else:
+			cur.execute(query)
 
-			data = cur.fetchall()
-			columns = [desc[0] for desc in cur.description]
-			results_arr.append(columns)
-			conn.commit()
+		data = cur.fetchall()
+		columns = [desc[0] for desc in cur.description]
+		results_arr.append(columns)
+		conn.commit()
+
+		cur.close()
 
 		if pprint==True:
 			clock.print_lap('m')
@@ -144,4 +147,40 @@ class sqlite_connect(db_connect):
 
 
 
+	def transaction(self, queries, pprint=False):
+		'''
+		method for creating transcations
+		important to use when a rollback must be called if the
+		entire series of queries do not successfully complete
 		
+		queries - list - sql statements
+		
+		returns list of row counts for each query
+		'''
+		row_counts = []
+		conn = self.connect_to_db()
+		queries.insert(0, 'BEGIN;')
+		
+		cur = conn.cursor()
+		try:
+			for query in queries:
+				clock = timer()
+				if pprint == True:
+					print(self.format_sql(query))
+				cur.execute(query)
+				
+				if pprint == True:
+					clock.print_lap('m')
+					
+				row_counts.append(cur.rowcount)
+			conn.commit()
+		except Exception as e:
+			print('Rolling back transacation')
+			conn.rollback()
+			raise sqlite3.ProgrammingError(str(e))
+		finally:
+			self.close_conn()
+		
+		return row_counts
+
+

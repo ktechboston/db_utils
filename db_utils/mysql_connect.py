@@ -1,3 +1,4 @@
+# from db_utils import *
 from db_utils.timer import timer
 from db_utils.db_connect import db_connect
 import configparser
@@ -77,23 +78,7 @@ class mysql_connect(db_connect):
 		return row_count
 
 
-	def get_dicts_from_query(self, query, params=None, pprint=False):
-		conn = self.connect_to_db()
-
-		if pprint == True:
-			clock = timer()
-			print(self.format_sql(query))
-		
-		with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-			try:                
-				cur.execute(query, params)
-				conn.commit()
-				data = cur.fetchall()
-
-			finally:
-				self.close_conn()
-
-			return data
+	# def get_dicts_from_query(self, query, params=None, pprint=False):
 
 
 
@@ -106,16 +91,20 @@ class mysql_connect(db_connect):
 		if pprint == True:
 			print(self.format_sql(query))
 
-		with conn.cursor() as cur:
-			if params:
-				cur.execute(query, params)
-			else:
-				cur.execute(query)
+		# with conn.cursor() as cur:
+		cur = conn.cursor()
+		
+		if params:
+			cur.execute(query, params)
+		else:
+			cur.execute(query)
 
-			data = cur.fetchall()
-			columns = [desc[0] for desc in cur.description]
-			results_arr.append(columns)
-			conn.commit()
+		data = cur.fetchall()
+		columns = [desc[0] for desc in cur.description]
+		results_arr.append(columns)
+		conn.commit()
+
+		cur.close()
 
 		if pprint==True:
 			clock.print_lap('m')

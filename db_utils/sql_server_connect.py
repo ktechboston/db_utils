@@ -1,9 +1,10 @@
+from db_utils import *
 from db_utils.db_connect import db_connect
-from pprint import pprint
+# from pprint import pprint
 from db_utils.timer import timer
-import pyodbc
-import configparser
-import pandas as pd
+# import pyodbc
+# import configparser
+# import pandas as pd
 
 
 class sql_server_connect(db_connect):
@@ -70,7 +71,8 @@ class sql_server_connect(db_connect):
 
 
 
-	def get_dicts_from_query():
+	# def get_dicts_from_query(self, query, params=None, pprint=False):
+	
 
 
 	def get_arr_from_query(self, query, params=None, pprint=False):
