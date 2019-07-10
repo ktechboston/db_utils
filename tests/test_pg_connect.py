@@ -223,7 +223,6 @@ class TestPgConnect(unittest.TestCase):
 	def test_copy_expert(self):
 
 		# hmmmmm...
-		db.update_db("create table if not exists test_table")
 		sql = """COPY test_table
 		FROM STDIN
 		WITH (FORMAT csv)"""
@@ -241,9 +240,3 @@ class TestPgConnect(unittest.TestCase):
 
 
 unittest.main()
-
-# pgtables = db.get_df_from_query('SELECT * FROM pg_tables', pprint=True)
-
-# print(db.get_df_from_query('select count(*) from pg_tables limit 10', pprint=True).head())
-
-# db.csv_to_table('predictions_prediction_wh.txt', 'predictions', append=False)
