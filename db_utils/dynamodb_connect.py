@@ -1,4 +1,4 @@
-# from db_utils import *
+from db_utils import default_path
 from db_utils.DBUtil import DBUtil
 
 import boto3
