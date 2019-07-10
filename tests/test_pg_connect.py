@@ -217,11 +217,26 @@ class TestPgConnect(unittest.TestCase):
 			columnArray = columnsString.split(",")
 			pprint(columnArray)
 
-		 
+		# how to get the column names?
 
 
+	def test_copy_expert(self):
 
-	# def test_copy_expert(self):
+		# hmmmmm...
+		db.update_db("create table if not exists test_table")
+		sql = """COPY test_table
+		FROM STDIN
+		WITH (FORMAT csv)"""
+
+		with open("sample.csv",'r') as f:
+			db.copy_expert(sql, f)
+
+		csv_row_count = sum(1 for row in "sample.csv")
+		sql_row_count = db.update_db("select count(*) from test_table")
+
+		pprint(sql_row_count, csv_row_count)
+		
+		self.assertEqual(sql_row_count, csv_row_count)
 
 
 

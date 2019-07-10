@@ -96,8 +96,7 @@ class pg_connect(db_connect):
 		>>    copy_expert(sql, fl)
 		
 
-		copying date from a table to a flat file:
-
+		copying data from a table to a flat file:
 
 		>>sql = """COPY test_table
 		TO STDOUT
@@ -239,7 +238,7 @@ class pg_connect(db_connect):
 		self.close_conn()
 		return 0
 	
-	
+
 	
 	def batch_write_arr_to_table(self, arr, tablename, columns, pkeys, new_table=True):
 		conn = self.connect_to_db()
