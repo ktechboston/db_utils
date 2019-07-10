@@ -122,6 +122,7 @@ class TestPgConnect(unittest.TestCase):
 		self.assertEqual(df['name'][0], TEST_ROW)
 
 
+
 ####################################################
 	def test_transaction_noError(self):
 		
@@ -178,6 +179,7 @@ class TestPgConnect(unittest.TestCase):
 		]
 
 		self.assertRaises(psycopg2.errors.SyntaxError, db.transaction, sql_list, pprint=False)
+#################################################################################################
 
 
 
@@ -196,6 +198,31 @@ class TestPgConnect(unittest.TestCase):
 
 		self.assertEqual(row_count[1], [5])
 		self.assertEqual(element[1:], [['v1'], ['a1'], ['b1'], ['c1'], ['d1']])
+
+
+
+	# def test_batch_write_arr_to_table(self):
+
+	def test_csv_to_table(self):
+
+		db.update_db("drop table if exists predictions")
+		db.csv_to_table('predictions_prediction_wh.txt', 'predictions', append=False)
+		# read txt file by line
+		# count how many columns
+		# count number of columns of 'predictions'
+
+		with open("predictions_prediction_wh.txt", "r") as f:
+			columnsString = f.readline()
+			columnsString = columnsString.replace('\n','')
+			columnArray = columnsString.split(",")
+			pprint(columnArray)
+
+		 
+
+
+
+	# def test_copy_expert(self):
+
 
 
 unittest.main()
