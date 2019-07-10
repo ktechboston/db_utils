@@ -6,7 +6,7 @@ from pprint import pprint
 sys.path.insert(0, '..')
 from db_utils.pg_connect import pg_connect
 from db_utils.timer import sql_ts
-
+import psycopg2
 
 config_file = 'databases.conf'
 db = pg_connect('postgres', config_file)
@@ -26,8 +26,7 @@ class TestPgConnect(unittest.TestCase):
 
 		print("test create table function...")
 
-		db.update_db('create table if not exists test_user(name varchar);', pprint=False)
-		cr = db.update_db('select count(*) from test_user', pprint = False)
+		cr = db.update_db('create table if not exists test_user(name varchar);', pprint=False)
 		self.assertEqual(cr, -1, 'create statement failure')
 
 
@@ -46,18 +45,19 @@ class TestPgConnect(unittest.TestCase):
 		print("test insert function with parameters...")
 
 		db.update_db('create table if not exists test_user(name varchar);', pprint=False)
-		insert2 = db.update_db("insert into test_user(name) values (?)", params=('Terry',), pprint=False)
+		insert2 = db.update_db("insert into test_user(name) values (%s)", params=('Terry',), pprint=False)
 
 		self.assertEqual(insert2, 1, 'insert statement failure')
 
 
+# WHY 3??????????????????????????
 	def test_update_db_delete(self):
 
 		print("test delete function...")
 
 		db.update_db('create table if not exists test_user(name varchar);', pprint=False)
 		insert1 = db.update_db("insert into test_user(name) values ('Lu')", pprint=False)
-		# insert2 = db.update_db("insert into test_user(name) values (?)", params=('Terry',), pprint=False)
+		insert2 = db.update_db("insert into test_user(name) values (%s)", params=('Terry',), pprint=False)
 		delete = db.update_db('delete from test_user', pprint=False)
 
 		self.assertEqual(delete, 2, 'delete statement failure')
@@ -73,21 +73,21 @@ class TestPgConnect(unittest.TestCase):
 		self.assertEqual(up1, -1, 'drop table statement returned non 0 row update')
 
 
-	# def test_dicts_query(self):
+	def test_dicts_query(self):
 
-	# 	print('testing get_dicts_from_query...')
-	# 	TEST_ROW = 'one test row'
+		print('testing get_dicts_from_query...')
+		TEST_ROW = 'one test row'
 
-	# 	db.update_db('drop table if exists test_table;', pprint=False)
-	# 	db.update_db('create table if not exists test_table(name varchar);', pprint=False)
-	# 	db.update_db("insert into test_table(name) values (?)", params=(TEST_ROW,), pprint=False)
+		db.update_db('drop table if exists test_table;', pprint=False)
+		db.update_db('create table if not exists test_table(name varchar);', pprint=False)
+		db.update_db("insert into test_table(name) values (%s)", params=(TEST_ROW,), pprint=False)
 
 
-	# 	df = db.get_dicts_from_query('''
-	# 	SELECT * FROM test_table
-	# 	''', pprint=False)
+		df = db.get_dicts_from_query('''
+		SELECT * FROM test_table
+		''', pprint=False)
 
-	# 	pprint(df)
+		self.assertEqual(df[0].get('name'),TEST_ROW)
 
 
 	def test_arr_query(self):
@@ -97,7 +97,7 @@ class TestPgConnect(unittest.TestCase):
 
 		db.update_db('drop table if exists test_table;', pprint=False)
 		db.update_db('create table if not exists test_table(name varchar);', pprint=False)
-		db.update_db("insert into test_table(name) values %s", params=(TEST_ROW,), pprint=False)
+		db.update_db("insert into test_table(name) values (%s)", params=(TEST_ROW,), pprint=False)
 
 		arr = db.get_arr_from_query('''
 		SELECT * FROM test_table
@@ -113,7 +113,7 @@ class TestPgConnect(unittest.TestCase):
 
 		db.update_db('drop table if exists test_table;', pprint=False)
 		db.update_db('create table if not exists test_table(name varchar);', pprint=False)
-		db.update_db("insert into test_table(name) values (?)", params=(TEST_ROW,), pprint=False)
+		db.update_db("insert into test_table(name) values (%s)", params=(TEST_ROW,), pprint=False)
 
 		df = db.get_df_from_query('''
 		SELECT * FROM test_table
@@ -177,29 +177,31 @@ class TestPgConnect(unittest.TestCase):
 		'''
 		]
 
-		self.assertRaises(sqlite3.ProgrammingError, db.transaction, sql_list, pprint=False)
+		self.assertRaises(psycopg2.errors.SyntaxError, db.transaction, sql_list, pprint=False)
 
+
+
+	def test_write_arr_to_table(self):
+
+		print("testing writing array to table...")
+
+		testArray = [['v1','v2','v3','v4','v5'],['a1','a2','a3','a4','a5'],['b1','b2','b3','b4','b5'],['c1','c2','c3','c4','c5'],['d1','d2','d3','d4','d5']]
+		tablename = 'test_table'
+		columns = ['column1','column2','column3','column4','column5']
+
+		db.write_arr_to_table(testArray,tablename, columns)
+
+		row_count = db.get_arr_from_query("select count(*) from test_table")
+		element = db.get_arr_from_query("select column1 from test_table")
+
+		self.assertEqual(row_count[1], [5])
+		self.assertEqual(element[1:], [['v1'], ['a1'], ['b1'], ['c1'], ['d1']])
 
 
 unittest.main()
 
 # pgtables = db.get_df_from_query('SELECT * FROM pg_tables', pprint=True)
 
-# print(pgtables)
-
-# # print(sql_ts('now'))
-
-# db.update_db('drop table if exists errors', pprint=True)
-# db.update_db('drop table if exists banqi;')
 # print(db.get_df_from_query('select count(*) from pg_tables limit 10', pprint=True).head())
-
-
-# db.csv_to_table('predictions_prediction_wh.txt', 'predictions', append=True)
-
-# print(db.get_df_from_query('select count(*) from pg_tables limit 10', pprint=True).head())
-
-# db.update_db('drop table if exists predictions;')
 
 # db.csv_to_table('predictions_prediction_wh.txt', 'predictions', append=False)
-
-# print(db.get_df_from_query('select count(*) from pg_tables limit 10', pprint=True).head())

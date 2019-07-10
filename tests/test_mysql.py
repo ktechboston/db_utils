@@ -142,6 +142,8 @@ class TestMySqlConnect(unittest.TestCase):
 		SELECT * FROM test_table
 		''', pprint=False)
 
+		pprint("df: "+df)
+
 		self.assertEqual(df['a_col'][0], TEST_ROW)
 
 

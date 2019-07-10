@@ -1,4 +1,4 @@
-# from db_utils import *
+from db_utils import default_path
 from db_utils.timer import timer
 
 import numpy as np
@@ -7,6 +7,8 @@ import sqlparse
 import configparser
 import sqlparse
 import os
+import psycopg2
+import psycopg2.extras
 
 class db_connect():
 	'''

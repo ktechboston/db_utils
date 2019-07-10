@@ -1,5 +1,6 @@
 from db_utils.timer import timer
 from db_utils.db_connect import db_connect
+from db_utils import default_path
 from psycopg2.pool import SimpleConnectionPool
 from jinja2 import Template
 import psycopg2
@@ -8,6 +9,8 @@ import configparser
 import numpy as np
 import pandas as pd
 import sqlparse
+
+from pprint import pprint
 
 
 class pg_connect(db_connect):
@@ -210,6 +213,7 @@ class pg_connect(db_connect):
 		column_def = "({0} varchar(256) )".format( " varchar(256),".join(columns))
 		#null_conv = lambda x: '' if x == None or x.lower() == 'nan' else x
 		value_str = "({0})".format( ",".join(["%s" for c in columns]))
+
 		sql = "insert into {0} {1} values {2};".format(tablename, column_str, value_str)
 
 		try:
@@ -234,6 +238,7 @@ class pg_connect(db_connect):
 		conn.commit()
 		self.close_conn()
 		return 0
+	
 	
 	
 	def batch_write_arr_to_table(self, arr, tablename, columns, pkeys, new_table=True):

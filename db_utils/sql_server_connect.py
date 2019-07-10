@@ -1,4 +1,4 @@
-from db_utils import *
+from db_utils import default_path
 from db_utils.db_connect import db_connect
 from pprint import pprint
 from db_utils.timer import timer

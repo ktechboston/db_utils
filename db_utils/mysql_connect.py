@@ -1,4 +1,4 @@
-# from db_utils import *
+from db_utils import default_path
 from db_utils.timer import timer
 from db_utils.db_connect import db_connect
 import configparser
@@ -6,6 +6,8 @@ import mysql.connector
 import numpy as np
 import pandas as pd
 import sqlparse
+import psycopg2
+import psycopg2.extras
 
 
 ###TO DO
@@ -93,7 +95,7 @@ class mysql_connect(db_connect):
 
 		# with conn.cursor() as cur:
 		cur = conn.cursor()
-		
+
 		if params:
 			cur.execute(query, params)
 		else:
