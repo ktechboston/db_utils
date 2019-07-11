@@ -264,29 +264,55 @@ class TestPgConnect(unittest.TestCase):
         db.update_db("drop table if exists test_table")
         db.csv_to_table('sample.csv', 'test_table', append=False)
 
+
         # testing copy table to file
         print("testing copy table to file...")
 
-        sql = """COPY test_table
+        sql1 = """COPY test_table
         TO STDOUT
         WITH CSV HEADER"""
 
-        csv_row_count = 0
+        csv_row_count1 = 0
 
-        with open("test.csv",'w+') as f:
-            db.copy_expert(sql, f)
+        with open("test1.csv",'w+') as f:
+            db.copy_expert(sql1, f)
 
-        with open("test.csv", "r") as f:
+        with open("test1.csv", "r") as f:
             reader = csv.reader(f, delimiter = ",")
             data = list(reader)
-            csv_row_count = len(data)
+            csv_row_count1 = len(data)
 
-        sql_row_count = db.get_arr_from_query("select count(*) from test_table")
+        sql_row_count1 = db.get_arr_from_query("select count(*) from test_table")
         
-        self.assertEqual(sql_row_count[1][0]+1, csv_row_count)
+        self.assertEqual(sql_row_count1[1][0]+1, csv_row_count1)
+
+
 
         # testing copy file to table
         print("testing copy file to table...")
+
+        db.update_db("delete from test_table")
+
+        sql2 = """COPY test_table
+        FROM STDIN
+        WITH CSV HEADER"""
+
+        csv_row_count2 = 0
+
+        with open("test1.csv",'r') as f:
+            db.copy_expert(sql2, f)
+
+        with open("test1.csv", "r") as f:
+            reader = csv.reader(f, delimiter = ",")
+            data = list(reader)
+            csv_row_count2 = len(data)
+
+        sql_row_count2 = db.get_arr_from_query("select count(*) from test_table")
+
+        # pprint(csv_row_count2)
+        # pprint(sql_row_count2[1][0]+1)
+        
+        self.assertEqual(csv_row_count2, sql_row_count2[1][0]+1)
 
 
 unittest.main()
