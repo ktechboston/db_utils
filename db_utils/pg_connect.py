@@ -187,7 +187,7 @@ class pg_connect(db_connect):
                 cur.execute(query, params)
                 data = cur.fetchall()
                 columns = [desc[0] for desc in cur.description]
-        
+                
         if commit == True:
             conn.commit()
         
