@@ -15,168 +15,168 @@ db = sqlite_connect('test.db')
 class TestSqliteConnect(unittest.TestCase):
 
 
-	def setUp(self):
-		print ("\n--- Prepare environment ---")
+    def setUp(self):
+        print ("\n--- Prepare environment ---")
 
-	def tearDown(self):
-		print ("--- Clean up ---\n")
-
-
-	def test_updatedb_createTable(self):
-
-		print("test create table function...")
-
-		db.update_db('create table if not exists test_user(name varchar);', pprint=False)
-		cr = db.update_db('select count(*) from test_user', pprint = False)
-		self.assertEqual(cr, -1, 'create statement failure')
+    def tearDown(self):
+        print ("--- Clean up ---\n")
 
 
-	def test_updatedb_insert(self):
+    def test_updatedb_createTable(self):
 
-		print("test insert function...")
+        print("test create table function...")
 
-		db.update_db('create table if not exists test_user(name varchar);', pprint=False)
-		insert1 = db.update_db("insert into test_user(name) values ('Lu')", pprint=False)
-
-		self.assertEqual(insert1, 1, 'insert statement failure')
-
-
-	def test_update_db_insertParam(self):
-
-		print("test insert function with parameters...")
-
-		db.update_db('create table if not exists test_user(name varchar);', pprint=False)
-		insert2 = db.update_db("insert into test_user(name) values (?)", params=('Terry',), pprint=False)
-
-		self.assertEqual(insert2, 1, 'insert statement failure')
+        db.update_db('create table if not exists test_user(name varchar);', pprint=False)
+        cr = db.update_db('select count(*) from test_user', pprint = False)
+        self.assertEqual(cr, -1, 'create statement failure')
 
 
-	def test_update_db_delete(self):
+    def test_updatedb_insert(self):
 
-		print("test delete function...")
+        print("test insert function...")
 
-		db.update_db('create table if not exists test_user(name varchar);', pprint=False)
-		insert1 = db.update_db("insert into test_user(name) values ('Lu')", pprint=False)
-		# insert2 = db.update_db("insert into test_user(name) values (?)", params=('Terry',), pprint=False)
-		delete = db.update_db('delete from test_user', pprint=False)
+        db.update_db('create table if not exists test_user(name varchar);', pprint=False)
+        insert1 = db.update_db("insert into test_user(name) values ('Lu')", pprint=False)
 
-		self.assertEqual(delete, 2, 'delete statement failure')
+        self.assertEqual(insert1, 1, 'insert statement failure')
 
 
-	def test_updatedb_drop(self):
+    def test_update_db_insertParam(self):
 
-		print("test drop function...")
+        print("test insert function with parameters...")
 
-		db.update_db('create table if not exists test_user(name varchar);', pprint=False)
-		up1 = db.update_db('drop table if exists test_user;', pprint=False)
+        db.update_db('create table if not exists test_user(name varchar);', pprint=False)
+        insert2 = db.update_db("insert into test_user(name) values (?)", params=('Terry',), pprint=False)
 
-		self.assertEqual(up1, -1, 'drop table statement returned non 0 row update')
-
-
-	# def test_dicts_query(self):
-
-	# 	print('testing get_dicts_from_query...')
-	# 	TEST_ROW = 'one test row'
-
-	# 	db.update_db('drop table if exists test_table;', pprint=False)
-	# 	db.update_db('create table if not exists test_table(name varchar);', pprint=False)
-	# 	db.update_db("insert into test_table(name) values (?)", params=(TEST_ROW,), pprint=False)
+        self.assertEqual(insert2, 1, 'insert statement failure')
 
 
-	# 	df = db.get_dicts_from_query('''
-	# 	SELECT * FROM test_table
-	# 	''', pprint=False)
+    def test_update_db_delete(self):
 
-	# 	pprint(df)
+        print("test delete function...")
+
+        db.update_db('create table if not exists test_user(name varchar);', pprint=False)
+        insert1 = db.update_db("insert into test_user(name) values ('Lu')", pprint=False)
+        # insert2 = db.update_db("insert into test_user(name) values (?)", params=('Terry',), pprint=False)
+        delete = db.update_db('delete from test_user', pprint=False)
+
+        self.assertEqual(delete, 2, 'delete statement failure')
 
 
-	def test_arr_query(self):
+    def test_updatedb_drop(self):
 
-		print('testing get_arr_from_query method....')
-		TEST_ROW = 'one test row'
+        print("test drop function...")
 
-		db.update_db('drop table if exists test_table;', pprint=False)
-		db.update_db('create table if not exists test_table(name varchar);', pprint=False)
-		db.update_db("insert into test_table(name) values (?)", params=(TEST_ROW,), pprint=False)
+        db.update_db('create table if not exists test_user(name varchar);', pprint=False)
+        up1 = db.update_db('drop table if exists test_user;', pprint=False)
 
-		arr = db.get_arr_from_query('''
-		SELECT * FROM test_table
-		''', pprint=False)
+        self.assertEqual(up1, -1, 'drop table statement returned non 0 row update')
 
-		self.assertEqual(arr[1][0], TEST_ROW)
 
-	
-	def test_df_query(self):
+    # def test_dicts_query(self):
 
-		print('testing get_df_from_query method....')
-		TEST_ROW = 'one test row'
+    #   print('testing get_dicts_from_query...')
+    #   TEST_ROW = 'one test row'
 
-		db.update_db('drop table if exists test_table;', pprint=False)
-		db.update_db('create table if not exists test_table(name varchar);', pprint=False)
-		db.update_db("insert into test_table(name) values (?)", params=(TEST_ROW,), pprint=False)
+    #   db.update_db('drop table if exists test_table;', pprint=False)
+    #   db.update_db('create table if not exists test_table(name varchar);', pprint=False)
+    #   db.update_db("insert into test_table(name) values (?)", params=(TEST_ROW,), pprint=False)
 
-		df = db.get_df_from_query('''
-		SELECT * FROM test_table
-		''', pprint=False)
 
-		self.assertEqual(df['name'][0], TEST_ROW)
+    #   df = db.get_dicts_from_query('''
+    #   SELECT * FROM test_table
+    #   ''', pprint=False)
+
+    #   pprint(df)
+
+
+    def test_arr_query(self):
+
+        print('testing get_arr_from_query method....')
+        TEST_ROW = 'one test row'
+
+        db.update_db('drop table if exists test_table;', pprint=False)
+        db.update_db('create table if not exists test_table(name varchar);', pprint=False)
+        db.update_db("insert into test_table(name) values (?)", params=(TEST_ROW,), pprint=False)
+
+        arr = db.get_arr_from_query('''
+        SELECT * FROM test_table
+        ''', pprint=False)
+
+        self.assertEqual(arr[1][0], TEST_ROW)
+
+    
+    def test_df_query(self):
+
+        print('testing get_df_from_query method....')
+        TEST_ROW = 'one test row'
+
+        db.update_db('drop table if exists test_table;', pprint=False)
+        db.update_db('create table if not exists test_table(name varchar);', pprint=False)
+        db.update_db("insert into test_table(name) values (?)", params=(TEST_ROW,), pprint=False)
+
+        df = db.get_df_from_query('''
+        SELECT * FROM test_table
+        ''', pprint=False)
+
+        self.assertEqual(df['name'][0], TEST_ROW)
 
 ####################################################
-	def test_transaction_noError(self):
-		
-		print('testing transcation without error...')
-		sql_list = [
+    def test_transaction_noError(self):
+        
+        print('testing transcation without error...')
+        sql_list = [
 
-		'''
-		drop table if exists test_table
-		''',
+        '''
+        drop table if exists test_table
+        ''',
 
-		'''
-		CREATE TABLE IF NOT EXISTS test_table(a_col varchar(20) PRIMARY KEY)
-		''',
+        '''
+        CREATE TABLE IF NOT EXISTS test_table(a_col varchar(20) PRIMARY KEY)
+        ''',
 
-		'''
-		INSERT INTO test_table(a_col) VALUES ('first test row')
-		''',
+        '''
+        INSERT INTO test_table(a_col) VALUES ('first test row')
+        ''',
 
-		'''
-		INSERT INTO test_table(a_col) VALUES ('second test row')
-		''',
+        '''
+        INSERT INTO test_table(a_col) VALUES ('second test row')
+        ''',
 
-		'''
-		DROP TABLE test_table
-		'''
-		]
+        '''
+        DROP TABLE test_table
+        '''
+        ]
 
-		expected_output = [0, 0, 1, 1, 0]
-		row_update = db.transaction(sql_list, pprint=False)
-		self.assertEqual(row_update, expected_output)
+        expected_output = [0, 0, 1, 1, 0]
+        row_update = db.transaction(sql_list, pprint=False)
+        self.assertEqual(row_update, expected_output)
 
 
-	def test_transaction_error(self):
-		
-		print("testing transcation with error...")
+    def test_transaction_error(self):
+        
+        print("testing transcation with error...")
 
-		sql_list = [
+        sql_list = [
 
-		'''
-		drop table if exists test_table
-		''',
+        '''
+        drop table if exists test_table
+        ''',
 
-		'''
-		CREATE TABLE IF NOT EXISTS test_table(a_col varchar(20) PRIMARY KEY)
-		''',
+        '''
+        CREATE TABLE IF NOT EXISTS test_table(a_col varchar(20) PRIMARY KEY)
+        ''',
 
-		'''
-		INSERT INTO test_table(a_col) VALUES ('first test row')
-		''',
+        '''
+        INSERT INTO test_table(a_col) VALUES ('first test row')
+        ''',
 
-		'''
-		SELECT sql_sytnax_error FORM TALBE
-		'''
-		]
+        '''
+        SELECT sql_sytnax_error FORM TALBE
+        '''
+        ]
 
-		self.assertRaises(sqlite3.ProgrammingError, db.transaction, sql_list, pprint=False)
+        self.assertRaises(sqlite3.ProgrammingError, db.transaction, sql_list, pprint=False)
 
 
 

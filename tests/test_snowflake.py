@@ -26,7 +26,7 @@ COPY INTO ds_scratch.conversion_raw FROM 's3://aib-ml/mnaumov/amobee.csv'
                 TYPE = CSV
                 skip_header=1)
         CREDENTIALS = (aws_key_id='{aws_access}' aws_secret_key='{aws_secret}')
-	''', pprint=True)
+    ''', pprint=True)
 
 
 
@@ -34,15 +34,15 @@ out = db.copy_into('''
 COPY INTO DS_STAGING.DOSMONOS_BOUNCES
 FROM 's3://aib-wih-xfer/dm_to_aib/dm_db_dump/bounces-28-02-2019.txt' 
 FILE_FORMAT = ( 
-	TYPE = CSV FIELD_DELIMITER = ',' 
-	SKIP_HEADER = 1 
-	FIELD_OPTIONALLY_ENCLOSED_BY = '"' 
-	EMPTY_FIELD_AS_NULL = TRUE 
-	IGNORE_UTF8_ERRORS = TRUE 
-	ERROR_ON_COLUMN_COUNT_MISMATCH = FALSE 
-	ENCODING = UTF8 VALIDATE_UTF8 = FALSE ) 
-	ON_ERROR = CONTINUE TRUNCATECOLUMNS = TRUE 
-	CREDENTIALS = (aws_key_id='{aws_access}' aws_secret_key='{aws_secret}')
+    TYPE = CSV FIELD_DELIMITER = ',' 
+    SKIP_HEADER = 1 
+    FIELD_OPTIONALLY_ENCLOSED_BY = '"' 
+    EMPTY_FIELD_AS_NULL = TRUE 
+    IGNORE_UTF8_ERRORS = TRUE 
+    ERROR_ON_COLUMN_COUNT_MISMATCH = FALSE 
+    ENCODING = UTF8 VALIDATE_UTF8 = FALSE ) 
+    ON_ERROR = CONTINUE TRUNCATECOLUMNS = TRUE 
+    CREDENTIALS = (aws_key_id='{aws_access}' aws_secret_key='{aws_secret}')
 ''', pprint=True)
 
 

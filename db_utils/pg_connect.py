@@ -239,7 +239,6 @@ class pg_connect(db_connect):
 		return 0
 	
 
-	
 	def batch_write_arr_to_table(self, arr, tablename, columns, pkeys, new_table=True):
 		conn = self.connect_to_db()
 
