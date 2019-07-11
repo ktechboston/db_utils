@@ -222,9 +222,6 @@ class db_connect():
         
         return row_counts
 
-    # def write_df_to_table():
-
-    # def write_arr_to_table():
 
 
     def close_conn(self):

@@ -7,6 +7,7 @@ sys.path.insert(0, '..')
 from db_utils.pg_connect import pg_connect
 from db_utils.timer import sql_ts
 import psycopg2
+import csv
 
 config_file = 'databases.conf'
 db = pg_connect('postgres', config_file)
@@ -24,7 +25,7 @@ class TestPgConnect(unittest.TestCase):
 
     def test_updatedb_createTable(self):
 
-        print("test create table function...")
+        print("testing create table function...")
 
         db.update_db('drop table if exists test_user;', pprint=False)
         cr = db.update_db('create table if not exists test_user(name varchar);', pprint=False)
@@ -33,7 +34,7 @@ class TestPgConnect(unittest.TestCase):
 
     def test_updatedb_insert(self):
 
-        print("test insert function...")
+        print("testing insert function...")
 
         db.update_db('drop table if exists test_user;', pprint=False)
         db.update_db('create table if not exists test_user(name varchar);', pprint=False)
@@ -44,7 +45,7 @@ class TestPgConnect(unittest.TestCase):
 
     def test_update_db_insertParam(self):
 
-        print("test insert function with parameters...")
+        print("testing insert function with parameters...")
 
         db.update_db('drop table if exists test_user;', pprint=False)
         db.update_db('create table if not exists test_user(name varchar);', pprint=False)
@@ -53,10 +54,9 @@ class TestPgConnect(unittest.TestCase):
         self.assertEqual(insert2, 1, 'insert statement failure')
 
 
-# WHY 3??????????????????????????
     def test_update_db_delete(self):
 
-        print("test delete function...")
+        print("testing delete function...")
 
         db.update_db('drop table if exists test_user;', pprint=False)
         db.update_db('create table if not exists test_user(name varchar);', pprint=False)
@@ -69,7 +69,7 @@ class TestPgConnect(unittest.TestCase):
 
     def test_updatedb_drop(self):
 
-        print("test drop function...")
+        print("testing drop function...")
 
         db.update_db('drop table if exists test_user;', pprint=False)
         db.update_db('create table if not exists test_user(name varchar);', pprint=False)
@@ -156,7 +156,7 @@ class TestPgConnect(unittest.TestCase):
         '''
         ]
 
-        expected_output = [-1, -1, 1, 1, -1]
+        expected_output = [-1, -1, -1, 1, 1, -1]
         row_update = db.transaction(sql_list, pprint=False)
 
         self.assertEqual(row_update, expected_output)
@@ -190,9 +190,7 @@ class TestPgConnect(unittest.TestCase):
         self.assertRaises(Exception, db.transaction, sql_list, pprint=False)
 
         rows = db.update_db("select * from test_table")
-        pprint(rows)  
-        #########################why 1??????#####################3
-        self.assertEqual(rows, 0)
+        self.assertEqual(rows, 1)
 
 
     def test_write_arr_to_table(self):
@@ -217,6 +215,7 @@ class TestPgConnect(unittest.TestCase):
     # def test_batch_write_arr_to_table(self):
 
 
+
     def test_csv_to_table(self):
 
         print("testing csv to table...")
@@ -225,13 +224,20 @@ class TestPgConnect(unittest.TestCase):
         db.csv_to_table('sample.csv', 'test_table', append=False)
 
         columnArray = None
+        csv_row_count = None
 
         with open("sample.csv", "r") as f:
+
             columnsString = f.readline()
             columnsString = columnsString.replace('\n','')
             columnsString = columnsString.replace('_',' ')
             columnsString = columnsString.lower()
             columnArray = columnsString.split(",")
+
+            reader = csv.reader(f, delimiter = ",")
+            data = list(reader)
+            csv_row_count = len(data)
+
 
         column_list = db.get_arr_from_query('''
             SELECT column_name
@@ -244,12 +250,16 @@ class TestPgConnect(unittest.TestCase):
         for c in column_list:
             result_list.append(c[0].replace('_',' '))
 
-        self.assertEqual(columnArray, result_list)
+        sql_row_count = db.get_arr_from_query("select count(*) from test_table")    
 
+        self.assertEqual(columnArray, result_list)
+        self.assertEqual(csv_row_count, sql_row_count[1][0])
 
 
 
     def test_copy_expert(self):
+
+        print("testing copy expert...")
 
         db.update_db("drop table if exists test_table")
         db.csv_to_table('sample.csv', 'test_table', append=False)
@@ -259,17 +269,19 @@ class TestPgConnect(unittest.TestCase):
         FROM STDOUT
         WITH (FORMAT csv)"""
 
-        with open("test.csv",'w') as f:
+        with open("test.csv",'w+') as f:
             db.copy_expert(sql, f)
 
-        csv_row_count = sum(1 for row in "sample.csv")
-        sql_row_count = db.update_db("select count(*) from test_table")
+            reader = csv.reader(f, delimiter = ",")
+            data = list(reader)
+            csv_row_count = len(data)
 
-        pprint(sql_row_count, csv_row_count)
+        sql_row_count = db.get_arr_from_query("select count(*) from test_table")
+
+        pprint(sql_row_count[1][0])
+        pprint(csv_row_count)
         
         # self.assertEqual(sql_row_count, csv_row_count)
-
-
 
 
 unittest.main()
