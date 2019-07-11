@@ -129,7 +129,7 @@ class TestPgConnect(unittest.TestCase):
 
     def test_transaction_noError(self):
         
-        print('testing transcation without no error...')
+        print('testing transcation with no error...')
 
         db.update_db('drop table if exists test_user;', pprint=False)
 
@@ -195,7 +195,7 @@ class TestPgConnect(unittest.TestCase):
 
     def test_write_arr_to_table(self):
 
-        print("testing writing array to table...")
+        print("testing write_array_to_table...")
 
         db.update_db('drop table if exists test_table;', pprint=False)
 
@@ -218,7 +218,7 @@ class TestPgConnect(unittest.TestCase):
 
     def test_csv_to_table(self):
 
-        print("testing csv to table...")
+        print("testing csv_to_table...")
 
         db.update_db("drop table if exists test_table")
         db.csv_to_table('sample.csv', 'test_table', append=False)
@@ -259,29 +259,34 @@ class TestPgConnect(unittest.TestCase):
 
     def test_copy_expert(self):
 
-        print("testing copy expert...")
+        print("testing copy_expert...")
 
         db.update_db("drop table if exists test_table")
         db.csv_to_table('sample.csv', 'test_table', append=False)
 
+        # testing copy table to file
+        print("testing copy table to file...")
 
         sql = """COPY test_table
-        FROM STDOUT
-        WITH (FORMAT csv)"""
+        TO STDOUT
+        WITH CSV HEADER"""
+
+        csv_row_count = 0
 
         with open("test.csv",'w+') as f:
             db.copy_expert(sql, f)
 
+        with open("test.csv", "r") as f:
             reader = csv.reader(f, delimiter = ",")
             data = list(reader)
             csv_row_count = len(data)
 
         sql_row_count = db.get_arr_from_query("select count(*) from test_table")
-
-        pprint(sql_row_count[1][0])
-        pprint(csv_row_count)
         
-        # self.assertEqual(sql_row_count, csv_row_count)
+        self.assertEqual(sql_row_count[1][0]+1, csv_row_count)
+
+        # testing copy file to table
+        print("testing copy file to table...")
 
 
 unittest.main()
