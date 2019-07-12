@@ -12,7 +12,6 @@ import csv
 config_file = 'databases.conf'
 db = pg_connect('postgres', config_file)
 
-
 class TestPgConnect(unittest.TestCase):
 
 
@@ -210,19 +209,6 @@ class TestPgConnect(unittest.TestCase):
 
         self.assertEqual(row_count[1], [5])
         self.assertEqual(element[1:], [['v1'], ['a1'], ['b1'], ['c1'], ['d1']])
-
-
-    # )))))):
-    def test_batch_write_arr_to_table(self):
-        arr = [[1, 2, 3], [4,5,6], [7,8,9], [10,11,12], [13,14,15]]
-        tablename = 'test_table'
-        columns = ['c2', 'c3', 'c4', 'c5']
-        pkeys = {"dist": 'okey'}
-
-        db.batch_write_arr_to_table(arr, tablename, columns, pkeys, new_table=True)
-
-        df = db.get_df_from_query("select * from test_table")
-        pprint(df)
 
 
     def test_csv_to_table(self):

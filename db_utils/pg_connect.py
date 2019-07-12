@@ -242,50 +242,6 @@ class pg_connect(db_connect):
             conn.commit()
             self.close_conn()
             return 0
-    
-
-    def batch_write_arr_to_table(self, arr, tablename, columns, pkeys, new_table=True):
-        conn = self.connect_to_db()
-
-        dist_str = 'distkey(' + pkeys['dist'] + ')' if 'dist' in pkeys else ''
-        sort_str = 'sortkey(' + pkeys['sort'] + ')' if 'sort' in pkeys else ''
-        keys = [ x for x in [dist_str,sort_str] if x != '' ]
-
-        pprint(keys)
-
-        column_str = "({0})".format( ",".join(columns))
-
-        pprint("column_str: "+column_str)
-
-        column_def = '(' + (', ').join([x + ' varchar(256)' for x in columns]) + ') ' + (' ').join(keys)
-
-        pprint("column_def: "+column_def)
-
-        with conn.cursor() as cur:
-            if new_table==True:
-                cur.execute("DROP TABLE IF EXISTS {0}".format(tablename))
-                cur.execute("CREATE TABLE {0} {1}".format(tablename, column_def))
-                
-            data = []; c = 0
-            for row in arr:
-                c += 1
-                data.append(str(tuple(row)))
-                if (len(data) == 20000) or (c == len(arr)):
-                    value_str = ', '.join(data)
-                    null_conv = lambda x: '' if x == None or x.lower() == 'nan' else x
-
-                    sql = "insert into {0} {1} values {2};".format(tablename, column_str, null_conv(value_str))
-                    try: cur.execute(sql)
-                    except Exception as e:
-                        print(e); self.close_conn()
-                        raise e
-                    data = []
-
-        conn.commit()
-        self.close_conn()
-        return 0
-
-
 
 
     def csv_to_table(self, path, table_name, append=False, **kwargs):
