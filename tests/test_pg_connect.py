@@ -212,8 +212,17 @@ class TestPgConnect(unittest.TestCase):
         self.assertEqual(element[1:], [['v1'], ['a1'], ['b1'], ['c1'], ['d1']])
 
 
-    # def test_batch_write_arr_to_table(self):
+    # )))))):
+    def test_batch_write_arr_to_table(self):
+        arr = [[1, 2, 3], [4,5,6], [7,8,9], [10,11,12], [13,14,15]]
+        tablename = 'test_table'
+        columns = ['c2', 'c3', 'c4', 'c5']
+        pkeys = {"dist": 'okey'}
 
+        db.batch_write_arr_to_table(arr, tablename, columns, pkeys, new_table=True)
+
+        df = db.get_df_from_query("select * from test_table")
+        pprint(df)
 
 
     def test_csv_to_table(self):
@@ -308,9 +317,6 @@ class TestPgConnect(unittest.TestCase):
             csv_row_count2 = len(data)
 
         sql_row_count2 = db.get_arr_from_query("select count(*) from test_table")
-
-        # pprint(csv_row_count2)
-        # pprint(sql_row_count2[1][0]+1)
         
         self.assertEqual(csv_row_count2, sql_row_count2[1][0]+1)
 
