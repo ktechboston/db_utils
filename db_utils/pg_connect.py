@@ -187,7 +187,7 @@ class pg_connect(db_connect):
                 cur.execute(query, params)
                 data = cur.fetchall()
                 columns = [desc[0] for desc in cur.description]
-                
+
         if commit == True:
             conn.commit()
         
@@ -204,39 +204,44 @@ class pg_connect(db_connect):
 
 
 
-    def write_arr_to_table(self, arr, tablename, columns, new_table=True):
+    def write_arr_to_table(self, arr, tablename, columns, pkeys = None, new_table=True, db = 'postgres'):
 
-        conn = self.connect_to_db()
+        if db == 'redshift' and pkeys != None:
+            
+            self.batch_write_arr_to_table(arr, tablename, columns, pkeys, new_table=True)
 
-        column_str = "({0})".format( ",".join(columns))
-        column_def = "({0} varchar(256) )".format( " varchar(256),".join(columns))
-        #null_conv = lambda x: '' if x == None or x.lower() == 'nan' else x
-        value_str = "({0})".format( ",".join(["%s" for c in columns]))
+        else:
+            conn = self.connect_to_db()
 
-        sql = "insert into {0} {1} values {2};".format(tablename, column_str, value_str)
+            column_str = "({0})".format( ",".join(columns))
+            column_def = "({0} varchar(256) )".format( " varchar(256),".join(columns))
+            #null_conv = lambda x: '' if x == None or x.lower() == 'nan' else x
+            value_str = "({0})".format( ",".join(["%s" for c in columns]))
 
-        try:
-            print(sql, arr[0])
-        except IndexError as e:
-            print(e, len(arr))
+            sql = "insert into {0} {1} values {2};".format(tablename, column_str, value_str)
 
-        with conn.cursor() as cur:
-            if new_table==True:
-                cur.execute("DROP TABLE IF EXISTS {0}".format(tablename))
-                cur.execute("CREATE TABLE {0} {1}".format(tablename, column_def))
             try:
-                for row in arr:
-                    cur.execute(sql, row )
+                print(sql, arr[0])
+            except IndexError as e:
+                print(e, len(arr))
 
-            except Exception as e:
-                print(e)
-                self.close_conn()
-                raise e
+            with conn.cursor() as cur:
+                if new_table==True:
+                    cur.execute("DROP TABLE IF EXISTS {0}".format(tablename))
+                    cur.execute("CREATE TABLE {0} {1}".format(tablename, column_def))
+                try:
+                    for row in arr:
+                        cur.execute(sql, row )
+
+                except Exception as e:
+                    print(e)
+                    self.close_conn()
+                    raise e
 
 
-        conn.commit()
-        self.close_conn()
-        return 0
+            conn.commit()
+            self.close_conn()
+            return 0
     
 
     def batch_write_arr_to_table(self, arr, tablename, columns, pkeys, new_table=True):
@@ -245,8 +250,16 @@ class pg_connect(db_connect):
         dist_str = 'distkey(' + pkeys['dist'] + ')' if 'dist' in pkeys else ''
         sort_str = 'sortkey(' + pkeys['sort'] + ')' if 'sort' in pkeys else ''
         keys = [ x for x in [dist_str,sort_str] if x != '' ]
+
+        pprint(keys)
+
         column_str = "({0})".format( ",".join(columns))
+
+        pprint("column_str: "+column_str)
+
         column_def = '(' + (', ').join([x + ' varchar(256)' for x in columns]) + ') ' + (' ').join(keys)
+
+        pprint("column_def: "+column_def)
 
         with conn.cursor() as cur:
             if new_table==True:
