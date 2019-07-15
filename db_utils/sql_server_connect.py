@@ -1,4 +1,3 @@
-from db_utils import default_path
 from db_utils.db_connect import db_connect
 from pprint import pprint
 from db_utils.timer import timer
@@ -34,45 +33,6 @@ class sql_server_connect(db_connect):
             '''.format(**self.config_dict))
 
         return conn
-
-
-    def update_db(self, query, params=None, pprint=False):
-        '''
-        query <string> - sql statement
-        params optional <tuple> - user input variables to prevent sql injection
-                                  sql statement should be formated with question
-                                  marks where variables should be placed
-
-                                  e.g. WHERE username = ?
-        pprint optional <boolean> -  prints formated sql query and time to execute in minutes
-
-        returns effected row count
-        '''
-        clock = timer()
-        conn = self.connect_to_db()
-
-        if pprint == True:
-            print(self.format_sql(query))
-
-        with conn.cursor() as cur:
-            if params:
-                cur.execute(query, params)
-            else:
-                cur.execute(query)
-
-            row_count = cur.rowcount
-            conn.commit()
-
-        
-        if pprint==True:
-            clock.print_lap('m')
-        
-        return row_count
-
-
-
-    # def get_dicts_from_query(self, query, params=None, pprint=False):
-    
 
 
     def get_arr_from_query(self, query, params=None, pprint=False):
@@ -114,6 +74,40 @@ class sql_server_connect(db_connect):
         return results_arr
 
 
+    def update_db(self, query, params=None, pprint=False):
+        '''
+        query <string> - sql statement
+        params optional <tuple> - user input variables to prevent sql injection
+                                  sql statement should be formated with question
+                                  marks where variables should be placed
+
+                                  e.g. WHERE username = ?
+        pprint optional <boolean> -  prints formated sql query and time to execute in minutes
+
+        returns effected row count
+        '''
+        clock = timer()
+        conn = self.connect_to_db()
+
+        if pprint == True:
+            print(self.format_sql(query))
+
+        with conn.cursor() as cur:
+            if params:
+                cur.execute(query, params)
+            else:
+                cur.execute(query)
+
+            row_count = cur.rowcount
+            conn.commit()
+
+        
+        if pprint==True:
+            clock.print_lap('m')
+        
+        return row_count
+
+
     def get_df_from_query(self, query, params=None, pprint=False):
         '''
         query <string> - sql statement
@@ -149,9 +143,9 @@ class sql_server_connect(db_connect):
         return df
 
 
-
     def transaction(self, queries, pprint=False):
         out = 'transactions are not supported by sql_server_connect yet'
         print(out)
         return out
 
+        

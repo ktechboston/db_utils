@@ -1,6 +1,6 @@
 from db_utils.timer import timer
 from db_utils.db_connect import db_connect
-from db_utils import default_path
+
 from psycopg2.pool import SimpleConnectionPool
 from jinja2 import Template
 import psycopg2
@@ -140,33 +140,33 @@ class pg_connect(db_connect):
 
 
 
-    def get_arr_from_query(self, query, params=None, pprint=False):
+    # def get_arr_from_query(self, query, params=None, pprint=False):
 
-        results_arr = []
-        clock = timer()
-        conn = self.connect_to_db()
+    #     results_arr = []
+    #     clock = timer()
+    #     conn = self.connect_to_db()
 
-        if pprint == True:
-            print(self.format_sql(query))
+    #     if pprint == True:
+    #         print(self.format_sql(query))
 
-        with conn.cursor() as cur:
-            if params:
-                cur.execute(query, params)
-            else:
-                cur.execute(query)
+    #     with conn.cursor() as cur:
+    #         if params:
+    #             cur.execute(query, params)
+    #         else:
+    #             cur.execute(query)
 
-            data = cur.fetchall()
-            columns = [desc[0] for desc in cur.description]
-            results_arr.append(columns)
-            conn.commit()
+    #         data = cur.fetchall()
+    #         columns = [desc[0] for desc in cur.description]
+    #         results_arr.append(columns)
+    #         conn.commit()
 
-        if pprint==True:
-            clock.print_lap('m')
+    #     if pprint==True:
+    #         clock.print_lap('m')
 
-        for row in data:
-            results_arr.append(list(row))
+    #     for row in data:
+    #         results_arr.append(list(row))
 
-        return results_arr
+    #     return results_arr
 
 
 

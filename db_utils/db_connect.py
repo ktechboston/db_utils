@@ -7,8 +7,6 @@ import sqlparse
 import configparser
 import sqlparse
 import os
-import psycopg2
-import psycopg2.extras
 
 class db_connect():
     '''
@@ -87,27 +85,6 @@ class db_connect():
         returns formated sql query
         '''
         return '\n' + sqlparse.format(query, reindent=True, keyword_case='upper')
-
-
-
-    def get_dicts_from_query(self, query, params=None, pprint=False):
-        conn = self.connect_to_db()
-
-        if pprint == True:
-            clock = timer()
-            print(self.format_sql(query))
-        
-        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            try:                
-                cur.execute(query, params)
-                conn.commit()
-                data = cur.fetchall()
-
-            finally:
-                self.close_conn()
-
-            return data
-
 
 
     def get_arr_from_query(self, query, params=None, pprint=False):

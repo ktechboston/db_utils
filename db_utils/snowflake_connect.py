@@ -1,5 +1,3 @@
-from db_utils import default_path
-
 from db_utils.timer import timer
 from db_utils.db_connect import db_connect
 from db_utils.s3_connect import s3_connect, snowflake_dmpky

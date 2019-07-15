@@ -1,17 +1,14 @@
 from db_utils import default_path
-
-
-import configparser
-import gzip
-import io
-import os
-import re
 from datetime import datetime
 from pprint import pprint
-
+import io
+import configparser
 import boto3
-
-from db_utils import default_path
+import csv
+import os
+import re
+import gzip
+import zlib
 
 
 # S3 Object
@@ -24,20 +21,16 @@ class s3_connect(object):
             aws_secret_access_key
             default_bucket
         section = config section for s3
-
         example:
         [s3]
             aws_access_key_id=<key_id>
             aws_secret_access_key=<secret_key>
             default_bucket=<bucket>
-
         Basic Usage:
-
         >>> from db_utils.s3_connect import s3_connect
         >>>
         >>> s3 = s3_connect('.databases.conf', 's3')
         >>> s3.list_keys(prefix='examples')
-
         '''
         creds = configparser.ConfigParser()
         self.config_file = config_file
@@ -91,18 +84,13 @@ class s3_connect(object):
         bucket = optional, defaults to 'default_bucket' section in config file
         
         model = comma delimited list of valid model names in .databases.conf file
-
         file_location = path to file
-
         model_type = (input | output | pickled_model | testing)
         pkl_model_type = (scaler |random_forest | collaborative_filter)
-
         append_ts = Boolean appends SQL friendly timestamp col to CSV file
                     YYYY-MM-DD HH:MM:SS
-
         uploads to s3://<bucket>/models/<model>/(input | output)/<year>/<month>/<day>_<type><timestamp>.csv
         returns dict {'bucket': <bucket>, 'key': <key>}
-
         '''
         creds = configparser.ConfigParser()
         creds.read(self.config_file)
@@ -203,11 +191,8 @@ class s3_connect(object):
     def get_contents(self, key, bucket=None, gz=False):
         '''
         key <string> - s3 key
-
         bucket <string> - optional, defaults to 'default_bucket' section in config file
-
         gz <boolean> - decompress gzipped content
-
         returns file like object StringIO
         '''
 
@@ -242,7 +227,6 @@ class s3_connect(object):
 class snowflake_dmpky(object):
     '''
     helper class to help porperly sort snowflake s3 dumps
-
     i.e.
     data_0_0_0.csv
     data_0_0_1.csv
@@ -252,7 +236,6 @@ class snowflake_dmpky(object):
     .
     .
     data_0_0_100.csv
-
     '''
     def __init__(self, key):
         pattern = re.compile('_(\d\d|\d)_(\d\d|\d)_(\d\d\d\d|\d\d\d|\d\d|\d)')
@@ -280,5 +263,3 @@ class snowflake_dmpky(object):
 
     def __str__(self):
         return self.key
-
-

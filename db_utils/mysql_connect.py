@@ -1,4 +1,3 @@
-from db_utils import default_path
 from db_utils.timer import timer
 from db_utils.db_connect import db_connect
 import configparser
@@ -6,8 +5,6 @@ import mysql.connector
 import numpy as np
 import pandas as pd
 import sqlparse
-import psycopg2
-import psycopg2.extras
 
 
 ###TO DO
@@ -80,88 +77,14 @@ class mysql_connect(db_connect):
         return row_count
 
 
-    # def get_dicts_from_query(self, query, params=None, pprint=False):
-
-
-
-    def get_arr_from_query(self, query, params=None, pprint=False):
-
-        results_arr = []
-        clock = timer()
-        conn = self.connect_to_db()
-
-        if pprint == True:
-            print(self.format_sql(query))
-
-        # with conn.cursor() as cur:
-        cur = conn.cursor()
-
-        if params:
-            cur.execute(query, params)
-        else:
-            cur.execute(query)
-
-        data = cur.fetchall()
-        columns = [desc[0] for desc in cur.description]
-        results_arr.append(columns)
-        conn.commit()
-
-        cur.close()
-
-        if pprint==True:
-            clock.print_lap('m')
-
-        for row in data:
-            results_arr.append(list(row))
-
-        return results_arr
-
-
-
-    def get_df_from_query(self, query, params=None, pprint=False, to_df=True, server_cur=False, itersize=1000, commit=True):
-        clock = timer()
-        conn = self.connect_to_db()
-        
-        if pprint==True:
-            print(self.format_sql(query))
-
-        if server_cur == True:
-            cur = conn.cursor('server_side_cursor')
-            cur.itersize = itersize
-            cur.execute(query, params)            
-            return cur
-        else:
-            with conn.cursor() as cur:
-                cur.execute(query, params)
-                data = cur.fetchall()
-                columns = [desc[0] for desc in cur.description]
-        
-        if commit == True:
-            conn.commit()
-        
-        self.close_conn()
-        
-        if pprint==True:
-            clock.print_lap('m')
-
-        if to_df == True: 
-            df = pd.DataFrame(data, columns=columns)
-            return df
-        else:
-            return data, columns    
-
-
-
     def get_df_from_query(self, query, params=None, pprint=False):
         '''
         query <string> - sql statement
         params optional <tuple> - user input variables to prevent sql injection
                                   sql statement should be formated with question
                                   marks where variables should be placed
-
                                   e.g. WHERE username = %s
         pprint optional <boolean> -  prints formated sql query and time to execute in minutes
-
         returns a panadas dataframe
         '''
         clock = timer()
@@ -185,6 +108,7 @@ class mysql_connect(db_connect):
 
         df = pd.DataFrame(data, columns=columns)
         return df
+
 
 
     def transaction(self, queries, pprint=False):
