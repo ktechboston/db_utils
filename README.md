@@ -1,5 +1,13 @@
 # db_utils library
 
+## Docker
+One line command to start a Docker container with db-utils installed.  This will run on any system that is running Docker.  A juypter notebook will open up on port 8888, just copy and paste the url from the terminal into your prefered browser.
+
+```bash
+docker run -p 8888:8888 hannaj06/db-utils::latest
+```
+
+
 ## Installation
 
 Required system packages:
@@ -7,7 +15,7 @@ Required system packages:
  * apt-get install unixodbc-dev (Ubuntu)
  * brew install postgresql (MacOS)
 
-```
+```bash
 pip install db_utils
 ```
 
