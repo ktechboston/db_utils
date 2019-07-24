@@ -11,8 +11,10 @@ docker run -p 8888:8888 hannaj06/db-utils::latest
 ## Installation
 
 Required system packages:
- * apt-get install libpq-dev (Ubuntu)
- * apt-get install unixodbc-dev (Ubuntu)
+ * sudo apt-get install python3-dev (Ubuntu)
+ * sudo apt-get apt-get install g++ (Ubuntu)
+ * sudo apt-get install libpq-dev (Ubuntu)
+ * sudo apt-get install unixodbc-dev (Ubuntu)
  * brew install postgresql (MacOS)
 
 ```bash
