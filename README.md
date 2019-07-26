@@ -1,5 +1,18 @@
 # db_utils library
 
+## Intoduction
+Db-utils is a Python package that standardizes interactions with various types of databases.  Db-utils is a collection of modules that lowers the bar to viewing, extracting, and analyizing data from various sources including:
+
+ * Redshift
+ * Snowflake
+ * Postgres
+ * Mysql
+ * Sqlserver
+ * sqlite
+ * s3
+ * dynamoDB
+
+
 ## Docker
 One line command to start a Docker container with db-utils installed.  This will run on any system that is running Docker.  A juypter notebook will open up on port 8888, just copy and paste the url from the terminal into your prefered browser.
 
@@ -9,7 +22,8 @@ docker run -p 8888:8888 hannaj06/db-utils::latest
 
 
 ## Installation
-
+ * sudo apt-get update
+ 
 Required system packages:
  * sudo apt-get install python3-dev (Ubuntu)
  * sudo apt-get apt-get install g++ (Ubuntu)
@@ -41,7 +55,6 @@ Basic Usage:
     >>> db = pg_connect('redshift_example', '.databases.conf')
     >>> db.get_arr_from_query('select * from test', pprint=True)
 ```
-
 
 ### snowflake_connect class
 A database connection class to interact with snowflake
@@ -110,13 +123,6 @@ example) Loading large data set into memory in chunks
 
 ```
 
-
-### db_connect class
-Parent python database connectin class utilizing
-API specification v2.0 https://www.python.org/dev/peps/pep-0249/#connection-methods
-use the connection classes above specific to the flavor of db you're using
-
-
 ### sqlite_connect class
 A database connection class to interact with SQLite
 
@@ -158,7 +164,8 @@ example) grab file from s3 into memory as stringIO object
 
 ```
 
-### sql server connect class
+
+### sql_server connect class
 
 Requirements: 
  * sql server drivers - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-2017
@@ -180,7 +187,6 @@ Basic Usage:
     >>>
     >>> db.get_arr_from_query('''SELECT * FROM SYSOBJECTS''', pprint=True))
 ```
-
 
 
 ### dynamodb_connect class
