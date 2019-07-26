@@ -5,6 +5,17 @@ import pandas as pd
 import sqlite3
 
 
+class sqlite3_mod(sqlite3.Connection):
+    def __enter__(self):
+        '''
+        context manger
+        '''
+        return self
+
+    def __exit__(self):
+        self.close()
+
+
 class sqlite_connect(db_connect):
     def __init__(self, db_path):
         '''
@@ -20,41 +31,41 @@ class sqlite_connect(db_connect):
 
 
     def connect_to_db(self):
-        self.conn = sqlite3.connect(self.db)
+        self.conn = sqlite3_mod.connect(self.db)
         return self.conn
 
 
-    def update_db(self, query, params=(), pprint=False):
-        '''
-        query <string> - sql statement
-        params optional <tuple> - user input variables to prevent sql injection
-                                  sql statement should be formated with question
-                                  marks where variables should be placed
+    # def update_db(self, query, params=(), pprint=False):
+    #     '''
+    #     query <string> - sql statement
+    #     params optional <tuple> - user input variables to prevent sql injection
+    #                               sql statement should be formated with question
+    #                               marks where variables should be placed
 
-                                  e.g. WHERE username = ?
-        pprint optional <boolean> -  prints formated sql query and time to execute in minutes
+    #                               e.g. WHERE username = ?
+    #     pprint optional <boolean> -  prints formated sql query and time to execute in minutes
 
-        returns effected row count
-        '''
-        clock = timer()
-        conn = self.connect_to_db()
+    #     returns effected row count
+    #     '''
+    #     clock = timer()
+    #     conn = self.connect_to_db()
 
-        if pprint == True:
-            print(self.format_sql(query))
+    #     if pprint == True:
+    #         print(self.format_sql(query))
 
-        cur = conn.cursor()
-        try:
-            cur.execute(query, params)
-            row_count = cur.rowcount
-            conn.commit()
-        finally:
-            cur.close()
-            self.close_conn()
+    #     cur = conn.cursor()
+    #     try:
+    #         cur.execute(query, params)
+    #         row_count = cur.rowcount
+    #         conn.commit()
+    #     finally:
+    #         cur.close()
+    #         self.close_conn()
         
-        if pprint==True:
-            clock.print_lap('m')
+    #     if pprint==True:
+    #         clock.print_lap('m')
         
-        return row_count
+    #     return row_count
 
 
     def get_df_from_query(self, query, params=(), pprint=False):
@@ -90,3 +101,42 @@ class sqlite_connect(db_connect):
 
         df = pd.DataFrame(data, columns=columns)
         return df
+
+
+    def get_arr_from_query(self, query, params=None, pprint=False):
+        '''
+        query <string> - sql statement
+        params optional <tuple> - user input variables to prevent sql injection
+                                  sql statement should be formated with question
+                                  marks where variables should be placed
+
+                                  e.g. WHERE username = ?
+        pprint optional <boolean> -  prints formated sql query and time to execute in minutes
+
+        returns a list of lists
+        '''
+        results_arr = []
+        clock = timer()
+        conn = self.connect_to_db()
+
+        if pprint == True:
+            print(self.format_sql(query))
+
+        cur = conn.cursor()
+        try:
+            cur.execute(query, params)
+            data = cur.fetchall()
+            columns = [desc[0] for desc in cur.description]
+            results_arr.append(columns)
+            conn.commit()
+        finally:
+            cur.close()
+            self.close_conn()
+
+        if pprint==True:
+            clock.print_lap('m')
+
+        for row in data:
+            results_arr.append(list(row))
+
+        return results_arr

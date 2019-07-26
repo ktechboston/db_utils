@@ -15,13 +15,12 @@ table = 'test_table'
 
 class test_pg_connect(unittest.TestCase):
     def setUp(self):
-        db.update_db('DROP TABLE IF EXISTS test_table;', pprint=True)
-        db.update_db('CREATE TABLE IF NOT EXISTS test_table(name VARCHAR);', pprint=True)
+        db.update_db('DROP TABLE IF EXISTS test_table;')
+        db.update_db('CREATE TABLE IF NOT EXISTS test_table(name VARCHAR);')
 
 
     def tearDown(self):
-        db.update_db('DROP TABLE IF EXISTS test_table;', pprint=True)
-        db.update_db('DROP TABLE IF EXISTS csv_test_table;', pprint=True)
+        db.update_db('DROP TABLE IF EXISTS test_table;')
 
 
     def test_updatedb(self):        
