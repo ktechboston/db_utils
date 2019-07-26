@@ -12,7 +12,7 @@ import sqlparse
 
 class pg_connect(db_connect):
     '''
-    Database connection class to interact with Postgres or Redshift Databases
+    Database connection class to interact with Postgres database
 
     requirements: database.conf file with the following format:
 
@@ -26,16 +26,16 @@ class pg_connect(db_connect):
     ex)
 
     .databases.conf
-    [redshift_example]
-    host=redshift.example.com
+    [postgres_example]
+    host=postgres.example.com
     user=test_user
     password=password
-    port=5439
+    port=5432
     database=test_db
 
     >>> from db_utils.pg_connect import pg_connect
     >>>
-    >>> db = pg_connect('redshift_example', '.databases.conf')
+    >>> db = pg_connect('postgres_example', '.databases.conf')
     >>> db.get_arr_from_query('select * from test', pprint=True)
 
 
