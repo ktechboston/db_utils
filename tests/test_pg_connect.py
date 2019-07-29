@@ -17,6 +17,7 @@ class test_pg_connect(unittest.TestCase):
     def setUp(self):
         db.update_db('DROP TABLE IF EXISTS test_table;')
         db.update_db('CREATE TABLE IF NOT EXISTS test_table(name VARCHAR);')
+        db.update_db('DROP TABLE IF EXISTS csv_test_table')
 
 
     def tearDown(self):
@@ -210,7 +211,7 @@ class test_pg_connect(unittest.TestCase):
         with open("copy_expert_dump.csv",'w+') as f:
             db.copy_expert(sql_dump, f)
 
-        with open("copy_expert_dump", "r") as f:
+        with open("copy_expert_dump.csv", "r") as f:
             reader = csv.reader(f, delimiter = ",")
             data = list(reader)
             csv_row_count1 = len(data)
@@ -227,9 +228,9 @@ class test_pg_connect(unittest.TestCase):
 
 
         with open('sample.csv','r') as f:
-            db.copy_expert(sql2, f)
+            db.copy_expert(sql_load, f)
 
-        with open('test1.csv', 'r') as f:
+        with open('sample.csv', 'r') as f:
             reader = csv.reader(f, delimiter = ',')
             data = list(reader)
             csv_row_count2 = len(data)
