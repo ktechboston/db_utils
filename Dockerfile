@@ -13,5 +13,3 @@ RUN  pip install --upgrade pip\
     && apt-get autoremove -yqq --purge \
     && apt-get clean\
     && pip install db-utils
-
-ADD databases.sample.conf databases.sample.conf
