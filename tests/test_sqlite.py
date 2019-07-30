@@ -4,15 +4,15 @@ import os
 import sqlite3
 sys.path.insert(0, '..')
 from db_utils.sqlite_connect import sqlite_connect
-
+from contextlib import contextmanager
 
 db = sqlite_connect('test.db')
 
 
 class test_sqlite_connect(unittest.TestCase):
     def setUp(self):
-        db.update_db('DROP TABLE IF EXISTS test_table')
-        db.update_db('CREATE TABLE IF NOT EXISTS test_table(name varchar);')
+        db.update_db('DROP TABLE IF EXISTS test_table', params=())
+        db.update_db('CREATE TABLE IF NOT EXISTS test_table(name varchar);', params=())
 
 
     def tearDown(self):
@@ -41,19 +41,19 @@ class test_sqlite_connect(unittest.TestCase):
         self.assertEqual(delete, 1)
 
 
-    # def test_get_arr_from_query(self):
-    #     test_row = 'one test row'
-    #     db.update_db(
-    #     '''INSERT INTO test_table(name) VALUES (?)''', 
-    #     params=(test_row,), 
-    #     pprint=True)
+    def test_get_arr_from_query(self):
+        test_row = 'one test row'
+        db.update_db(
+        '''INSERT INTO test_table(name) VALUES (?)''', 
+        params=(test_row,), 
+        pprint=True)
 
-    #     arr = db.get_arr_from_query('''
-    #     SELECT * FROM test_table
-    #     ''', pprint=True)
+        arr = db.get_arr_from_query('''
+        SELECT * FROM test_table
+        ''', pprint=True)
 
-    #     #print(arr)
-        #self.assertEqual(arr[0][0], test_row)
+        print(arr)
+        self.assertEqual(arr[1][0], test_row)
 
     
     def test_get_df_from_query(self):
@@ -94,36 +94,35 @@ class test_sqlite_connect(unittest.TestCase):
         '''
         ]
 
-        expected_output = [0, 0, 1, 1, 0]
+        expected_output = [-1, -1, -1, 1, 1, -1]
         row_update = db.transaction(sql_list, pprint=True)
         self.assertEqual(row_update, expected_output)
 
 
-#     def test_transaction_error(self):
+    def test_transaction_error(self):
         
-#         print("testing transcation with error...")
+        print("testing transcation with error...")
 
-#         sql_list = [
+        sql_list = [
 
-#         '''
-#         drop table if exists test_table
-#         ''',
+        '''
+        drop table if exists tans_table
+        ''',
 
-#         '''
-#         CREATE TABLE IF NOT EXISTS test_table(a_col varchar(20) PRIMARY KEY)
-#         ''',
+        '''
+        CREATE TABLE IF NOT EXISTS tans_table(a_col varchar(20) PRIMARY KEY)
+        ''',
 
-#         '''
-#         INSERT INTO test_table(a_col) VALUES ('first test row')
-#         ''',
+        '''
+        INSERT INTO tans_table(a_col) VALUES ('first test row')
+        ''',
 
-#         '''
-#         SELECT sql_sytnax_error FORM TALBE
-#         '''
-#         ]
+        '''
+        SELECT sql_sytnax_error FORM TALBE
+        '''
+        ]
 
-#         self.assertRaises(sqlite3.ProgrammingError, db.transaction, sql_list, pprint=True)
-
-
+        self.assertRaises(Exception, db.transaction, sql_list, pprint=True)
+        self.assertRaises(sqlite3.OperationalError, db.get_arr_from_query, 'SELECT COUNT(*) FROM tans_table', pprint=True)
 
 unittest.main()

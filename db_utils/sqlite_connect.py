@@ -5,15 +5,30 @@ import pandas as pd
 import sqlite3
 
 
-class sqlite3_mod(sqlite3.Connection):
+class sqlite_cursor(sqlite3.Cursor):
     def __enter__(self):
-        '''
-        context manger
-        '''
+        """
+        context manager
+        """
         return self
 
-    def __exit__(self):
-        self.close()
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        context manager with commit or rollback
+        """
+        try:
+            self.close()
+        except sqlite3.ProgrammingError:
+            pass
+
+
+class sqlite_con(sqlite3.Connection):
+    
+    def cursor(self, cursor=sqlite_cursor):
+        '''
+        implements a cursor with a context manager
+        '''
+        return sqlite_cursor(self)
 
 
 class sqlite_connect(db_connect):
@@ -31,7 +46,7 @@ class sqlite_connect(db_connect):
 
 
     def connect_to_db(self):
-        self.conn = sqlite3_mod.connect(self.db)
+        self.conn = sqlite_con(self.db)
         return self.conn
 
 
@@ -53,90 +68,90 @@ class sqlite_connect(db_connect):
     #     if pprint == True:
     #         print(self.format_sql(query))
 
-    #     cur = conn.cursor()
-    #     try:
-    #         cur.execute(query, params)
-    #         row_count = cur.rowcount
-    #         conn.commit()
-    #     finally:
-    #         cur.close()
-    #         self.close_conn()
-        
+    #     with conn.cursor(factory=sqlite_cursor) as cur:
+    #         try:
+    #             cur.execute(query, params)
+    #             row_count = cur.rowcount
+    #             conn.commit()
+    #         finally:
+    #             cur.close()
+    #             #self.close_conn()
+            
     #     if pprint==True:
     #         clock.print_lap('m')
-        
+            
     #     return row_count
 
 
-    def get_df_from_query(self, query, params=(), pprint=False):
-        '''
-        query <string> - sql statement
-        params optional <tuple> - user input variables to prevent sql injection
-                                  sql statement should be formated with question
-                                  marks where variables should be placed
+    # def get_df_from_query(self, query, params=(), pprint=False):
+    #     '''
+    #     query <string> - sql statement
+    #     params optional <tuple> - user input variables to prevent sql injection
+    #                               sql statement should be formated with question
+    #                               marks where variables should be placed
 
-                                  e.g. WHERE username = ?
-        pprint optional <boolean> -  prints formated sql query and time to execute in minutes
+    #                               e.g. WHERE username = ?
+    #     pprint optional <boolean> -  prints formated sql query and time to execute in minutes
 
-        returns a panadas dataframe
-        '''
-        clock = timer()
-        conn = self.connect_to_db()
+    #     returns a panadas dataframe
+    #     '''
+    #     clock = timer()
+    #     conn = self.connect_to_db()
         
-        if pprint==True:
-            print(self.format_sql(query))
+    #     if pprint==True:
+    #         print(self.format_sql(query))
 
-        cur = conn.cursor()
-        try:
-            cur.execute(query, params)
-            data = cur.fetchall()
-            columns = [desc[0] for desc in cur.description]
-            conn.commit()
-        finally:
-            cur.close()
-            self.close_conn()
+    #     with conn as cur:
+    #         try:
+    #             cur.execute(query, params)
+    #             data = cur.fetchall()
+    #             columns = [desc[0] for desc in cur.description]
+    #             conn.commit()
+    #         finally:
+    #             cur.close()
+    #             #self.close_conn()
 
-        if pprint==True:
-            clock.print_lap('m')
+    #     if pprint==True:
+    #         clock.print_lap('m')
 
-        df = pd.DataFrame(data, columns=columns)
-        return df
+    #     df = pd.DataFrame(data, columns=columns)
+    #     return df
 
 
-    def get_arr_from_query(self, query, params=None, pprint=False):
-        '''
-        query <string> - sql statement
-        params optional <tuple> - user input variables to prevent sql injection
-                                  sql statement should be formated with question
-                                  marks where variables should be placed
+    # def get_arr_from_query(self, query, params=None, pprint=False):
+    #     '''
+    #     query <string> - sql statement
+    #     params optional <tuple> - user input variables to prevent sql injection
+    #                               sql statement should be formated with question
+    #                               marks where variables should be placed
 
-                                  e.g. WHERE username = ?
-        pprint optional <boolean> -  prints formated sql query and time to execute in minutes
+    #                               e.g. WHERE username = ?
+    #     pprint optional <boolean> -  prints formated sql query and time to execute in minutes
 
-        returns a list of lists
-        '''
-        results_arr = []
-        clock = timer()
-        conn = self.connect_to_db()
+    #     returns a list of lists
+    #     '''
+    #     results_arr = []
+    #     clock = timer()
+    #     conn = self.connect_to_db()
 
-        if pprint == True:
-            print(self.format_sql(query))
+    #     if pprint == True:
+    #         print(self.format_sql(query))
 
-        cur = conn.cursor()
-        try:
-            cur.execute(query, params)
-            data = cur.fetchall()
-            columns = [desc[0] for desc in cur.description]
-            results_arr.append(columns)
-            conn.commit()
-        finally:
-            cur.close()
-            self.close_conn()
+    #     with conn as cur:
+    #         try:
+    #             cur.execute(query, params)
+    #             data = cur.fetchall()
+    #             columns = [desc[0] for desc in cur.description]
+    #             results_arr.append(columns)
+    #             conn.commit()
+    #         finally:
+    #             cur.close()
+    #             #self.close_conn()
 
-        if pprint==True:
-            clock.print_lap('m')
+    #     if pprint==True:
+    #         clock.print_lap('m')
 
-        for row in data:
-            results_arr.append(list(row))
+    #     for row in data:
+    #         results_arr.append(list(row))
 
-        return results_arr
+    #     return results_arr

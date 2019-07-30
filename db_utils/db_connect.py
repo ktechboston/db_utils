@@ -73,7 +73,10 @@ class db_connect():
 
         with conn.cursor() as cur:
             try:
-                cur.execute(query, params)
+                if params is not None:
+                    cur.execute(query, params)
+                else:
+                    cur.execute(query)
                 data = cur.fetchall()
                 columns = [desc[0] for desc in cur.description]
                 conn.commit()
@@ -109,7 +112,10 @@ class db_connect():
 
         with conn.cursor() as cur:
             try:
-                cur.execute(query, params)
+                if params is not None:
+                    cur.execute(query, params)
+                else:
+                    cur.execute(query)
                 data = cur.fetchall()
                 columns = [desc[0] for desc in cur.description]
                 results_arr.append(columns)
@@ -147,7 +153,10 @@ class db_connect():
 
         with conn.cursor() as cur:
             try:
-                cur.execute(query, params)
+                if params is not None:
+                    cur.execute(query, params)
+                else:
+                    cur.execute(query)
                 row_count = cur.rowcount
                 conn.commit()
             finally:
