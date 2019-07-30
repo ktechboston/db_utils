@@ -1,6 +1,6 @@
 version: "2.1"
 services:
-  obmedia:
+  dbutils_juypter:
     image: hannaj06/db-utils
     ports:
       - 8888:8888
