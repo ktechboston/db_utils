@@ -24,6 +24,7 @@ docker run -p 8888:8888 hannaj06/db-utils:latest
 
 Below is an example `docker-compose.yaml` file.  With this configuartion jupyter notebook changes persist in the location defined by `<local_notebooks>`.  Below is a sample of the `.databases.conf` file which will be bindmounted to the docker image.
 
+### docker-compose.yaml
 ```bash
 version: "2.1"
 services:
@@ -37,7 +38,7 @@ services:
 
 ```
 
-
+### .databases.conf
 ```ini
 [redshift]
 host=<redshift_host>
