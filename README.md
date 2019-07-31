@@ -1,7 +1,7 @@
 # db_utils library
 
-## Intoduction
-db-utils is a Python package that standardizes interactions with various types of databases.  db-utils is a collection of modules that lowers the bar to viewing, extracting, and analyizing data from various sources including:
+## Introduction
+db-utils is a Python package that standardizes interactions with various types of databases.  db-utils is a collection of modules that lowers the bar to viewing, extracting, and analyzing data from various sources including:
 
  * Redshift
  * Snowflake
@@ -14,7 +14,7 @@ db-utils is a Python package that standardizes interactions with various types o
 
 
 ## Docker
-One line command to start a Docker container with db-utils installed.  This will run on any system that is running Docker.  A juypter notebook will open up on port 8888, just copy and paste the url from the terminal into your prefered browser.
+One line command to start a Docker container with db-utils installed.  This will run on any system that is running Docker.  A jupyter notebook will open up on port 8888, just copy and paste the url from the terminal into your preferred browser.
 
 ```bash
 docker run -p 8888:8888 hannaj06/db-utils:latest
@@ -22,9 +22,8 @@ docker run -p 8888:8888 hannaj06/db-utils:latest
 
 ## docker-compose
 
-Below is an example `docker-compose.yaml` file.  With this configuartion jupyter notebook changes persist in the location defined by `<local_notebooks>`.  Below is a sample of the `.databases.conf` file which will be bindmounted to the docker image.
+Below is an example `docker-compose.yaml` file.  With this configuration jupyter notebook changes persist in the location defined by `<local_notebooks>`.  Below is a sample of the `.databases.conf` file which will be bindmounted to the docker image.
 
-### docker-compose.yaml
 ```bash
 version: "2.1"
 services:
@@ -38,7 +37,7 @@ services:
 
 ```
 
-### .databases.conf
+
 ```ini
 [redshift]
 host=<redshift_host>
