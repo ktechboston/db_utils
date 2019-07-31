@@ -1,7 +1,7 @@
 # db_utils library
 
 ## Intoduction
-Db-utils is a Python package that standardizes interactions with various types of databases.  Db-utils is a collection of modules that lowers the bar to viewing, extracting, and analyizing data from various sources including:
+db-utils is a Python package that standardizes interactions with various types of databases.  db-utils is a collection of modules that lowers the bar to viewing, extracting, and analyizing data from various sources including:
 
  * Redshift
  * Snowflake
@@ -17,11 +17,43 @@ Db-utils is a Python package that standardizes interactions with various types o
 One line command to start a Docker container with db-utils installed.  This will run on any system that is running Docker.  A juypter notebook will open up on port 8888, just copy and paste the url from the terminal into your prefered browser.
 
 ```bash
-docker run -p 8888:8888 hannaj06/db-utils::latest
+docker run -p 8888:8888 hannaj06/db-utils:latest
+```
+
+## docker-compose
+
+Below is an example `docker-compose.yaml` file.  With this configuartion jupyter notebook changes persist in the location defined by `<local_notebooks>`.  Below is a sample of the `.databases.conf` file which will be bindmounted to the docker image.
+
+```bash
+version: "2.1"
+services:
+  dbutils_juypter:
+    image: hannaj06/db-utils
+    ports:
+      - 8888:8888
+    volumes:
+      - ${HOME}/.databases.conf:/root/.databases.conf
+      - <local_notebooks>:/notebooks
+
 ```
 
 
-## Installation
+```ini
+[redshift]
+host=<redshift_host>
+user=<user>
+password=<redshift_password>
+port=<port>
+database=<db>
+
+[s3]
+aws_access_key_id=<access_id>
+aws_secret_access_key=<secret_access>
+region=<aws_region>
+default_bucket=<default_bucket>
+```
+
+## Installation on local envoirnment
  * sudo apt-get update
  
 Required system packages:

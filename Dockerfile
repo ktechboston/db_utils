@@ -14,4 +14,4 @@ RUN  pip install --upgrade pip\
     && apt-get clean\
     && pip install db-utils
 
-COPY sqlite_example.ipynb /notebooks/sqlite_example.ipynb
+COPY db-utils_example.ipynb /notebooks/db-utils_example.ipynb
