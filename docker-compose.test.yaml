@@ -28,7 +28,7 @@ services:
         ports:
           - 5420:5432
 
-    db-utils:
+    sut:
       build:
         context: .
       command: bash /root/tests/run_tests.sh
