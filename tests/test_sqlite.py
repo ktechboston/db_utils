@@ -106,7 +106,7 @@ class test_sqlite_connect(unittest.TestCase):
         sql_list = [
 
         '''
-        drop table if exists tans_table
+        DROP table if exists tans_table
         ''',
 
         '''
@@ -123,6 +123,6 @@ class test_sqlite_connect(unittest.TestCase):
         ]
 
         self.assertRaises(Exception, db.transaction, sql_list, pprint=True)
-        self.assertRaises(sqlite3.OperationalError, db.get_arr_from_query, 'SELECT COUNT(*) FROM tans_table', pprint=True)
+
 
 unittest.main()
