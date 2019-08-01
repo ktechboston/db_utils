@@ -1,6 +1,8 @@
 version: '2.1'
 
-#https://github.com/mysql/mysql-docker-docs
+#file used for automated unitTest for pull requests
+# see docker documentation for details 
+# https://docs.docker.com/docker-hub/builds/automated-testing/#check-your-test-results
 services:
     mysql:
         image: mysql:5.5
