@@ -10,14 +10,14 @@ services:
             MYSQL_DATABASE: mysql_docker
             MYSQL_ROOT_PASSWORD: cAKd32Ga
 
-    # sql_server:
-    #     image: microsoft/mssql-server-linux
-    #     ports:
-    #         - 1433:1433
-    #     environment:
-    #       ACCEPT_EULA: Y
-    #       SA_PASSWORD: sql_server_password
-    #       secure_file_priv: ''
+    sql_server:
+        image: microsoft/mssql-server-linux
+        ports:
+            - 1433:1433
+        environment:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: sql_server_password
+          secure_file_priv: ''
 
     postgres:
         image: postgres:9.6
@@ -29,6 +29,8 @@ services:
           - 5420:5432
 
     sut:
-      build:
-        context: .
+      build: .
       command: bash /root/tests/run_tests.sh
+      depends_on:
+        - mysql
+        - postgres
