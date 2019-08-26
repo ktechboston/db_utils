@@ -25,10 +25,10 @@ docker run -p 8888:8888 hannaj06/db-utils:latest
 Below is an example `docker-compose.yaml` file.  With this configuration jupyter notebook changes persist in the location defined by `<local_notebooks>`.  Below is a sample of the `.databases.conf` file which will be bindmounted to the docker image.
 
 `docker-compose.yaml`
-```bash
+```yaml
 version: "2.1"
 services:
-  dbutils_juypter:
+  dbutils_jupyter:
     image: hannaj06/db-utils
     ports:
       - 8888:8888
@@ -54,7 +54,7 @@ region=<aws_region>
 default_bucket=<default_bucket>
 ```
 
-## Installation on local envoirnment
+## Installation on local environment
  * sudo apt-get update
  
 Required system packages:
@@ -231,10 +231,10 @@ Helper class to time long running processes
 
 Basic Usage:
 
-```
->>> from db_utils.timer import timer
->>>
->>> t = timer()
->>> t.lap('s')
-5.469961
+```python
+from db_utils.timer import timer
+
+t = timer()
+t.lap('s')
+> 5.469961
 ```
