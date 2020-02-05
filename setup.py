@@ -26,7 +26,6 @@ setuptools.setup(
         'awscli',
         'snowflake-connector-python',
         'mysql-connector-python',
-        'pyodbc',
         'jinja2'
     ],
 )
